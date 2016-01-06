@@ -1,0 +1,31 @@
+﻿{
+  "version": "0.9.0-preview",
+  "description": "Communicate to ServiceFabric Services through Service Bus. Add this package to your Reliable Service project. The ServiceFabric.ServiceBus.Services Class Library should be used in conjunction with ServiceFabric.ServiceBus.Client",
+  "authors": [ "Loek Duys" ],
+  "tags": [ "" ],
+  "projectUrl": "https://github.com/loekd/ServiceFabric.ServiceBus",
+  "licenseUrl": "https://github.com/loekd/ServiceFabric.ServiceBus/blob/master/LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loekd/ServiceFabric.ServiceBus.git"
+  },
+  "packInclude": {
+    "content/": "content/**"
+  },
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+        "Microsoft.ServiceFabric.Services": "1.4.87-preview",
+        "Microsoft.WindowsAzure.ConfigurationManager": "3.1.0",
+        "WindowsAzure.ServiceBus": "3.1.0"
+      }
+    },
+    "net460": {
+      "dependencies": {
+        "Microsoft.ServiceFabric.Services": "1.4.87-preview",
+        "Microsoft.WindowsAzure.ConfigurationManager": "3.1.0",
+        "WindowsAzure.ServiceBus": "3.1.0"
+      }
+    }
+  }
+}

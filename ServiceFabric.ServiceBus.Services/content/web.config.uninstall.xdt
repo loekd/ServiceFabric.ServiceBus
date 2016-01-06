@@ -1,0 +1,9 @@
+﻿<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<appSettings xdt:Transform="InsertIfMissing">
+		<!-- Service Bus specific app setings for receiving messaging connections -->
+		<add key="Microsoft.ServiceBus.ConnectionString.Receive" xdt:Transform="Remove" xdt:Locator="Match(key)" />
+		<!-- Service Bus specific app setings for sending messaging connections -->
+		<add key="Microsoft.ServiceBus.ConnectionString.Send" xdt:Transform="Remove" xdt:Locator="Match(key)" />
+	</appSettings>
+</configuration>
