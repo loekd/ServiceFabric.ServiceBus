@@ -1,3 +1,9 @@
+# Demo Project
+Need some help to get started? Have a look at: 'https://github.com/loekd/ServiceFabric.ServiceBus/tree/master/ServiceFabric.ServiceBus.Demo'
+
+### If you want to integrate this into an existing project, read on...
+----------------------------------------------
+
 # Server Package
 Make sure your projects are configured to build as 64 bit programs!
 ----------------------------------------------
