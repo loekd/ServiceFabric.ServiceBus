@@ -1,6 +1,6 @@
 ﻿{
   "version": "0.9.0-preview",
-  "description": "Communicate to ServiceFabric Services through Service Bus. Add this package to a project that will communicate to Reliable Services. The ServiceFabric.ServiceBus.Client Class Library is to be used in conjunction with ServiceFabric.ServiceBus.Services Class Library",
+  "description": "Communicate to ServiceFabric Services through Service Bus. Add this package to a project that will communicate to Reliable Services. The ServiceFabric.ServiceBus.Client Class Library should be used in conjunction with ServiceFabric.ServiceBus.Services Class Library",
   "authors": [ "Loek Duys" ],
   "tags": [ "" ],
   "projectUrl": "https://github.com/loekd/ServiceFabric.ServiceBus",
