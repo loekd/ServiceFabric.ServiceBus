@@ -1,8 +1,10 @@
 ﻿{
-  "version": "0.9.0-preview",
+  "version": "0.9.1-preview",
+  "requireLicenseAcceptance": true,
   "description": "Communicate to ServiceFabric Services through Service Bus. Add this package to a project that will communicate to Reliable Services. The ServiceFabric.ServiceBus.Client Class Library should be used in conjunction with ServiceFabric.ServiceBus.Services Class Library",
+  "summary": "Adds Reliable communication to and between ServiceFabric Reliable Services, using Service Bus. Supports Queues and Topics. This is the Client Package.",
   "authors": [ "Loek Duys" ],
-  "tags": [ "" ],
+  "tags": [ "ServiceFabric", "Service", "Fabric", "ServiceBus", "Bus", "Reliable" ],
   "projectUrl": "https://github.com/loekd/ServiceFabric.ServiceBus",
   "licenseUrl": "https://github.com/loekd/ServiceFabric.ServiceBus/blob/master/LICENSE",
   "repository": {

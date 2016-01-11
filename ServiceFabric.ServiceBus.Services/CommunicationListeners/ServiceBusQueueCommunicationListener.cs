@@ -21,31 +21,19 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		protected string ServiceBusQueueName { get; }
 
 		/// <summary>
-		/// Creates a new instance, using the init parameters of a <see cref="StatelessService"/>
-		/// </summary>
-		/// <param name="receiver">Object that will process incoming messages.</param>
-		/// <param name="parameters">The init parameters of a <see cref="StatelessService"/></param>
-		/// <param name="serviceBusQueueName">The name of the monitored Service Bus Queue</param>
-		/// <param name="serviceBusSendConnectionString">Optional connection string for sending messages to the queue. If not provided, the configuration file setting 'Microsoft.ServiceBus.ConnectionString.Send' will be used.</param>
-		/// <param name="seviceBusReceiveConnectionString">Optional connection string for receiving messages from the queue. If not provided, the configuration file setting 'Microsoft.ServiceBus.ConnectionString.Receive' will be used.</param>
-		public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, StatelessServiceInitializationParameters parameters, string serviceBusQueueName, string serviceBusSendConnectionString = null, string seviceBusReceiveConnectionString = null)
-			: base(receiver, parameters, serviceBusSendConnectionString, seviceBusReceiveConnectionString)
-		{
-			if (string.IsNullOrWhiteSpace(serviceBusQueueName)) throw new ArgumentOutOfRangeException(nameof(serviceBusQueueName));
-
-			ServiceBusQueueName = serviceBusQueueName;
-		}
-
-		/// <summary>
 		/// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
 		/// </summary>
-		/// <param name="receiver">Object that will process incoming messages.</param>
-		/// <param name="parameters">The init parameters of a <see cref="StatefulService"/></param>
+		/// <param name="receiver">(Required) Processes incoming messages.</param>
+		/// <param name="parameters">(Optional) The parameters that were used to init the Reliable Service that uses this listener.</param>
 		/// <param name="serviceBusQueueName">The name of the monitored Service Bus Queue</param>
-		/// <param name="serviceBusSendConnectionString">Optional connection string for sending messages to the queue. If not provided, the configuration file setting 'Microsoft.ServiceBus.ConnectionString.Send' will be used.</param>
-		/// <param name="seviceBusReceiveConnectionString">Optional connection string for receiving messages from the queue. If not provided, the configuration file setting 'Microsoft.ServiceBus.ConnectionString.Receive' will be used.</param>
-		public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, StatefulServiceInitializationParameters parameters, string serviceBusQueueName, string serviceBusSendConnectionString = null, string seviceBusReceiveConnectionString = null)
-			: base(receiver, parameters, serviceBusSendConnectionString, seviceBusReceiveConnectionString)
+		/// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
+		/// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
+		///  is used.</param>
+		/// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
+		///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
+		///  is used.</param>
+		public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, ServiceInitializationParameters parameters, string serviceBusQueueName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null)
+			: base(receiver, parameters, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
 		{
 			if (string.IsNullOrWhiteSpace(serviceBusQueueName)) throw new ArgumentOutOfRangeException(nameof(serviceBusQueueName));
 
@@ -64,8 +52,16 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		public override Task<string> OpenAsync(CancellationToken cancellationToken)
 		{
 			//use receive url:
-			_serviceBusClient = QueueClient.CreateFromConnectionString(ServiceBusReceiveConnectionString, ServiceBusQueueName);
-			ListenForMessages(cancellationToken);
+			_serviceBusClient = QueueClient.CreateFromConnectionString(ServiceBusReceiveConnectionString, ServiceBusQueueName
+				, ServiceBusReceiveMode);
+
+			if (ServiceBusMessagePrefetchCount > 0)
+			{
+				_serviceBusClient.PrefetchCount = ServiceBusMessagePrefetchCount;
+			}
+
+			ListenForMessages();
+			Thread.Yield();
 
 			//create send url:
 			string uri = ServiceBusSendConnectionString;
@@ -90,15 +86,21 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		/// <summary>
 		/// Starts listening for messages on the configured Service Bus Queue.
 		/// </summary>
-		/// <param name="cancellationToken"></param>
-		private void ListenForMessages(CancellationToken cancellationToken)
+		private void ListenForMessages()
 		{
-			var options = CreateMessageOptions();
-
-			_serviceBusClient.OnMessage(message =>
+			ThreadStart ts = () =>
 			{
-				ReceiveMessage(cancellationToken, message);
-			}, options);
+				while (!StopProcessingMessageToken.IsCancellationRequested)
+				{
+					var messages = _serviceBusClient.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout);
+					foreach (var message in messages)
+					{
+						if (StopProcessingMessageToken.IsCancellationRequested) break;
+						ReceiveMessage(message);
+					}
+				}
+			};
+			StartBackgroundThread(ts);
 		}
 	}
 }

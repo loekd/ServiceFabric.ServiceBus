@@ -1,12 +1,9 @@
-﻿using Microsoft.ServiceFabric.Services.Communication.Runtime;
-using Microsoft.ServiceFabric.Services.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Azure;
 using Microsoft.ServiceBus.Messaging;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Runtime;
 using ServiceFabric.ServiceBus.Services;
 using ServiceFabric.ServiceBus.Services.CommunicationListeners;
 
@@ -35,7 +32,7 @@ namespace SampleSubscriptionListeningStatelessService
 		}
 	}
 
-	internal sealed class Handler : IServiceBusMessageReceiver
+	internal sealed class Handler : AutoCompleteServiceBusMessageReceiver
 	{
 		private readonly StatelessService _service;
 
@@ -44,7 +41,7 @@ namespace SampleSubscriptionListeningStatelessService
 			_service = service;
 		}
 
-		public void ReceiveMessage(BrokeredMessage message)
+		protected override void ReceiveMessageImpl(BrokeredMessage message, CancellationToken cancellationToken)
 		{
 			ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
 		}
