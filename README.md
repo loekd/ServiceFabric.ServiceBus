@@ -1,6 +1,14 @@
 # Demo Project
 Need some help to get started? Have a look at: 'https://github.com/loekd/ServiceFabric.ServiceBus/tree/master/ServiceFabric.ServiceBus.Demo'
 
+## Nuget Packages:
+ServiceFabric.ServiceBus.Clients
+https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients/0.9.1-preview
+ServiceFabric.ServiceBus.Services
+https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services/0.9.1-preview
+
+(It's in preview state, because it depends on the Service Fabric package, which is also in preview.)
+
 ### If you want to integrate this into an existing project, read on...
 ----------------------------------------------
 
