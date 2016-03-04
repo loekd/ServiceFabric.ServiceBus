@@ -3,7 +3,7 @@
 
 To create a message handler:
 
-internal sealed class Handler : AutoCompleteServiceBusMessageReceiver
+internal sealed class Handler : IServiceBusMessageReceiver
 {
 	private readonly StatefulService _service;
 
@@ -12,7 +12,7 @@ internal sealed class Handler : AutoCompleteServiceBusMessageReceiver
 		_service = service;
 	}
 
-	protected override void ReceiveMessageImpl(BrokeredMessage message, CancellationToken cancellationToken)
+	public void ReceiveMessage(BrokeredMessage message)
 	{
 		ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
 	}
