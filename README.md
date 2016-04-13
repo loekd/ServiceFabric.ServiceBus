@@ -3,9 +3,9 @@ Need some help to get started? Have a look at: 'https://github.com/loekd/Service
 
 ## Nuget Packages:
 ServiceFabric.ServiceBus.Clients
-https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients/0.9.1-preview
+https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients/2.0.0
 ServiceFabric.ServiceBus.Services
-https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services/0.9.1-preview
+https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services/2.0.0
 
 (It's in preview state, because it depends on the Service Fabric package, which is also in preview.)
 
@@ -47,9 +47,9 @@ internal sealed class SampleQueueListeningStatefulService : StatefulService
 		// Also, define a QueueName:
 		string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
 
-		yield return new ServiceReplicaListener(parameters => new ServiceBusQueueCommunicationListener(
+		yield return new ServiceReplicaListener(context => new ServiceBusQueueCommunicationListener(
 			new Handler(this)
-			, parameters				
+			, context				
 			, serviceBusQueueName), "ServiceBusEndPoint");
 	}
 }
@@ -69,9 +69,9 @@ internal sealed class SampleSubscriptionListeningStatefulService : StatefulServi
 		string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
 		string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
 
-		yield return new ServiceReplicaListener(parameters => new ServiceBusSubscriptionCommunicationListener(
+		yield return new ServiceReplicaListener(context => new ServiceBusSubscriptionCommunicationListener(
 			new Handler(this)
-			, parameters			
+			, context			
 			, serviceBusTopicName
 			, serviceBusSubscriptionName));
 	}
@@ -90,9 +90,9 @@ internal sealed class SampleQueueListeningStatelessService : StatelessService
 			
 		// Also, define a QueueName:
 		string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
-		yield return new ServiceInstanceListener(parameters => new ServiceBusQueueCommunicationListener(
+		yield return new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
 			new Handler(this)
-			, parameters			
+			, context			
 			, serviceBusQueueName));
 	}
 }
@@ -112,9 +112,9 @@ internal sealed class SampleSubscriptionListeningStatelessService : StatelessSer
 		string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
 		string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
 
-		yield return new ServiceInstanceListener(parameters => new ServiceBusSubscriptionCommunicationListener(
+		yield return new ServiceInstanceListener(context => new ServiceBusSubscriptionCommunicationListener(
 			new Handler(this)
-			, parameters
+			, context
 			, serviceBusTopicName
 			, serviceBusSubscriptionName));
 	}
@@ -139,7 +139,7 @@ string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
 var factory = new ServiceBusTopicCommunicationClientFactory(resolver, serviceBusTopicName);
 
 //determine the partition and create a communication proxy
-long partitionKey = 0L;
+var partitionKey = new ServicePartitionKey(0L);
 var servicePartitionClient = new ServicePartitionClient<ServiceBusTopicCommunicationClient>(factory, uri, partitionKey);
 
 //use the proxy to send a message to the Service
