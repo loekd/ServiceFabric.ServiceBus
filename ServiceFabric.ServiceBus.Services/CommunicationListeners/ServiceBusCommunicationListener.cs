@@ -26,9 +26,9 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		protected IServiceBusMessageReceiver Receiver { get; }
 
 		/// <summary>
-		/// Gets the ServiceInitializationParameters that were used to create this instance.
+		/// Gets the <see cref="ServiceContext"/> that was used to create this instance.
 		/// </summary>
-		protected ServiceInitializationParameters Parameters { get; }
+		protected ServiceContext Context { get; }
 		
 		/// <summary>
 		/// Gets a Service Bus connection string that should have only receive-rights.
@@ -72,7 +72,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		/// Creates a new instance.
 		/// </summary>
 		/// <param name="receiver">(Required) Processes incoming messages.</param>
-		/// <param name="parameters">(Optional) The parameters that were used to init the Reliable Service that uses this listener.</param>
+		/// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
 		/// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
 		/// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
 		///  is used.</param>
@@ -80,11 +80,11 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
 		///  is used.</param>
 		protected ServiceBusCommunicationListener(IServiceBusMessageReceiver receiver
-			, ServiceInitializationParameters parameters
+			, ServiceContext context
 			, string serviceBusSendConnectionString
 			, string serviceBusReceiveConnectionString)
 		{
-			if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+			if (context == null) throw new ArgumentNullException(nameof(context));
 			if (receiver == null) throw new ArgumentNullException(nameof(receiver));
 
 			if (string.IsNullOrWhiteSpace(serviceBusSendConnectionString))
@@ -95,7 +95,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 			if (string.IsNullOrWhiteSpace(serviceBusSendConnectionString)) throw new ArgumentOutOfRangeException(nameof(serviceBusSendConnectionString));
 			if (string.IsNullOrWhiteSpace(serviceBusReceiveConnectionString)) throw new ArgumentOutOfRangeException(nameof(serviceBusReceiveConnectionString));
 
-			Parameters = parameters;
+			Context = context;
 			Receiver = receiver;
 			ServiceBusSendConnectionString = serviceBusSendConnectionString;
 			ServiceBusReceiveConnectionString = serviceBusReceiveConnectionString;

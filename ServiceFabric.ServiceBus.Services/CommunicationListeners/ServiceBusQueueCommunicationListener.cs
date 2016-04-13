@@ -24,7 +24,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		/// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
 		/// </summary>
 		/// <param name="receiver">(Required) Processes incoming messages.</param>
-		/// <param name="parameters">(Optional) The parameters that were used to init the Reliable Service that uses this listener.</param>
+		/// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
 		/// <param name="serviceBusQueueName">The name of the monitored Service Bus Queue</param>
 		/// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
 		/// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
@@ -32,8 +32,8 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		/// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
 		///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
 		///  is used.</param>
-		public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, ServiceInitializationParameters parameters, string serviceBusQueueName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null)
-			: base(receiver, parameters, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
+		public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, ServiceContext context, string serviceBusQueueName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null)
+			: base(receiver, context, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
 		{
 			if (string.IsNullOrWhiteSpace(serviceBusQueueName)) throw new ArgumentOutOfRangeException(nameof(serviceBusQueueName));
 

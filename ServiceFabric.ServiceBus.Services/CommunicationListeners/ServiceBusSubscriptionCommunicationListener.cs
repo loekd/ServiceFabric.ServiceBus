@@ -29,7 +29,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		/// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
 		/// </summary>
 		/// <param name="receiver">(Required) Processes incoming messages.</param>
-		/// <param name="parameters">(Optional) The parameters that were used to init the Reliable Service that uses this listener.</param>
+		/// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
 		/// <param name="serviceBusTopicName">The name of the monitored Service Bus Topic</param>
 		/// <param name="serviceBusSubscriptionName">The name of the monitored Service Bus Topic Subscription</param>
 		/// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
@@ -38,8 +38,8 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		/// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
 		///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
 		///  is used.</param>
-		public ServiceBusSubscriptionCommunicationListener(IServiceBusMessageReceiver receiver, ServiceInitializationParameters parameters, string serviceBusTopicName, string serviceBusSubscriptionName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null)
-			: base(receiver, parameters, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
+		public ServiceBusSubscriptionCommunicationListener(IServiceBusMessageReceiver receiver, ServiceContext context, string serviceBusTopicName, string serviceBusSubscriptionName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null)
+			: base(receiver, context, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
 		{
 			if (string.IsNullOrWhiteSpace(serviceBusTopicName)) throw new ArgumentOutOfRangeException(nameof(serviceBusTopicName));
 			if (string.IsNullOrWhiteSpace(serviceBusSubscriptionName)) throw new ArgumentOutOfRangeException(nameof(serviceBusSubscriptionName));
