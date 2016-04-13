@@ -1,6 +1,7 @@
 ﻿using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using System.Collections.Generic;
+using System.Fabric;
 using System.Threading;
 using Microsoft.Azure;
 using Microsoft.ServiceBus.Messaging;
@@ -14,6 +15,10 @@ namespace SampleQueueListeningStatelessService
 	/// </summary>
 	internal sealed class SampleQueueListeningStatelessService : StatelessService
 	{
+		public SampleQueueListeningStatelessService(StatelessServiceContext serviceContext) : base(serviceContext)
+		{
+		}
+
 		protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
 		{
 			// In the configuration file, define connection strings: 
@@ -22,11 +27,13 @@ namespace SampleQueueListeningStatelessService
 
 			// Also, define a QueueName:
 			string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
-			yield return new ServiceInstanceListener(parameters => new ServiceBusQueueCommunicationListener(
+			yield return new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
 				new Handler(this)
-				, parameters
+				, context
 				, serviceBusQueueName));
 		}
+
+		
 	}
 
 	internal sealed class Handler : AutoCompleteServiceBusMessageReceiver

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Fabric;
 using System.Threading;
 using Microsoft.Azure;
 using Microsoft.ServiceBus.Messaging;
@@ -14,6 +15,10 @@ namespace SampleSubscriptionListeningStatelessService
 	/// </summary>
 	internal sealed class SampleSubscriptionListeningStatelessService : StatelessService
 	{
+		public SampleSubscriptionListeningStatelessService(StatelessServiceContext serviceContext) : base(serviceContext)
+		{
+		}
+
 		protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
 		{
 			// In the configuration file, define connection strings: 
@@ -24,12 +29,14 @@ namespace SampleSubscriptionListeningStatelessService
 			string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
 			string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
 
-			yield return new ServiceInstanceListener(parameters => new ServiceBusSubscriptionCommunicationListener(
+			yield return new ServiceInstanceListener(context => new ServiceBusSubscriptionCommunicationListener(
 				new Handler(this)
-				, parameters
+				, context
 				, serviceBusTopicName
 				, serviceBusSubscriptionName));
 		}
+
+	
 	}
 
 	internal sealed class Handler : AutoCompleteServiceBusMessageReceiver

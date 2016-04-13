@@ -1,9 +1,11 @@
 ﻿using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using System.Collections.Generic;
+using System.Fabric;
 using System.Threading;
 using Microsoft.Azure;
 using Microsoft.ServiceBus.Messaging;
+using Microsoft.ServiceFabric.Data;
 using ServiceFabric.ServiceBus.Services;
 using ServiceFabric.ServiceBus.Services.CommunicationListeners;
 
@@ -14,6 +16,14 @@ namespace SampleSubscriptionListeningStatefulService
 	/// </summary>
 	internal sealed class SampleSubscriptionListeningStatefulService : StatefulService
 	{
+		public SampleSubscriptionListeningStatefulService(StatefulServiceContext serviceContext) : base(serviceContext)
+		{
+		}
+
+		public SampleSubscriptionListeningStatefulService(StatefulServiceContext serviceContext, IReliableStateManagerReplica reliableStateManagerReplica) : base(serviceContext, reliableStateManagerReplica)
+		{
+		}
+
 		protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
 		{
 			// In the configuration file, define connection strings: 
@@ -24,9 +34,9 @@ namespace SampleSubscriptionListeningStatefulService
 			string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
 			string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
 
-			yield return new ServiceReplicaListener(parameters => new ServiceBusSubscriptionCommunicationListener(
+			yield return new ServiceReplicaListener(context => new ServiceBusSubscriptionCommunicationListener(
 				new Handler(this)
-				, parameters
+				, context
 				, serviceBusTopicName
 				, serviceBusSubscriptionName));
 		}
@@ -45,5 +55,7 @@ namespace SampleSubscriptionListeningStatefulService
 				ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
 			}
 		}
+
+		
 	}
 }

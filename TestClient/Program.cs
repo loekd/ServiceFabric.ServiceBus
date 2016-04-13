@@ -206,7 +206,7 @@ namespace TestClient
 			if (serviceSupportsPartitions)
 			{
 				//determine the partition and create a communication proxy
-				long partitionKey = 0L;
+				var partitionKey = new ServicePartitionKey(0L);
 				servicePartitionClient = new ServicePartitionClient<ServiceBusTopicCommunicationClient>(factory, uri, partitionKey);
 			}
 			else
@@ -231,7 +231,7 @@ namespace TestClient
 			if (serviceSupportsPartitions)
 			{
 				//determine the partition and create a communication proxy
-				long partitionKey = 0L;
+				var partitionKey = new ServicePartitionKey(0L);
 				servicePartitionClient = new ServicePartitionClient<ServiceBusQueueCommunicationClient>(factory, uri, partitionKey);
 			}
 			else

@@ -1,0 +1,1 @@
+C:\PublicSources\GitHub\ServiceFabric.ServiceBus\ServiceFabric.ServiceBus.Demo\MyServiceFabricApp\obj\x64\Debug\MyServiceFabricApp.sfprojResolveAssemblyReference.cache
