@@ -1,6 +1,7 @@
 *App.Debug.config
 *App.Release.config
 *.exe.config
+*FileListAbsolute.txt
 /artifacts/bin
 /packages
 *publish nuget.bat
