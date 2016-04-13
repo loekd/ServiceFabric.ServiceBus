@@ -23,6 +23,20 @@ namespace ServiceFabric.ServiceBus.Clients
 		public ResolvedServicePartition ResolvedServicePartition { get; set; }
 
 		/// <summary>
+		/// Gets or Sets the name of the listener in the replica or instance to which the client is
+		/// connected to.
+		/// </summary>
+		public string ListenerName { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the service endpoint to which the client is connected to.
+		/// </summary>
+		/// <value>
+		/// <see cref="T:System.Fabric.ResolvedServiceEndpoint"/>
+		/// </value>
+		public ResolvedServiceEndpoint Endpoint { get; set; }
+
+		/// <summary>
 		/// Creates a new instance using the provided ServiceFabric Service Uri and Service Bus Queue name.
 		/// </summary>
 		/// <param name="serviceUri"></param>
