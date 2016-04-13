@@ -1,8 +1,18 @@
 *App.Debug.config
 *App.Release.config
-*exe.config
-*/bin/
-*/obj/
+*.exe.config
 /artifacts/bin
 /packages
 *publish nuget.bat
+
+**/pkg/*
+/TestClient/obj/*
+/TestClient/bin/*
+/ServiceFabric.ServiceBus.Demo/SampleQueueListeningStatefulService/bin/*
+/ServiceFabric.ServiceBus.Demo/SampleQueueListeningStatefulService/obj/*
+/ServiceFabric.ServiceBus.Demo/SampleSubscriptionListeningStatelessService/obj/*
+/ServiceFabric.ServiceBus.Demo/SampleSubscriptionListeningStatelessService/bin/*
+/ServiceFabric.ServiceBus.Demo/SampleSubscriptionListeningStatefulService/obj/*
+/ServiceFabric.ServiceBus.Demo/SampleSubscriptionListeningStatefulService/bin/*
+/ServiceFabric.ServiceBus.Demo/SampleQueueListeningStatelessService/obj/*
+/ServiceFabric.ServiceBus.Demo/SampleQueueListeningStatelessService/bin/*
