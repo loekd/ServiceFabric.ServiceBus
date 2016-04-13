@@ -1,2 +1,5 @@
 *App.Debug.config
 *App.Release.config
+/artifacts/bin
+/packages
+*publish nuget.bat
