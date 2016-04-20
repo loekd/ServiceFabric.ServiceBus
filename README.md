@@ -6,8 +6,7 @@ ServiceFabric.ServiceBus.Clients
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients/2.0.0
 ServiceFabric.ServiceBus.Services
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services/2.0.0
-
-(It's in preview state, because it depends on the Service Fabric package, which is also in preview.)
+(supports the GA version of Azure Service Fabric)
 
 ### If you want to integrate this into an existing project, read on...
 ----------------------------------------------
@@ -128,7 +127,8 @@ Make sure your projects are configured to build as 64 bit programs!
 ----------------------------------------------
 
 
-To communicate to a ServiceFabric Service:
+To communicate to a ServiceFabric Service through a Topic (Queues are also supported):
+(add the Microsoft.ServiceFabric.Services nuget package)
 
 ```javascript
 //the name of your application and the name of the Service, the default partition resolver and the topic name
