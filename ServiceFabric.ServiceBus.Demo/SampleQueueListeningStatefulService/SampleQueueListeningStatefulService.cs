@@ -36,7 +36,7 @@ namespace SampleQueueListeningStatefulService
 			yield return new ServiceReplicaListener(context => new ServiceBusQueueCommunicationListener(
 				new Handler(this)
 				, context
-				, serviceBusQueueName), "ServiceBusEndPoint");
+				, serviceBusQueueName), "StatefulService-ServiceBusSubscriptionListener");
 		}
 
 		

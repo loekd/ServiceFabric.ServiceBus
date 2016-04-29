@@ -33,7 +33,7 @@ namespace SampleSubscriptionListeningStatelessService
 				new Handler(this)
 				, context
 				, serviceBusTopicName
-				, serviceBusSubscriptionName));
+				, serviceBusSubscriptionName), "StatelessService-ServiceBusSubscriptionListener");
 		}
 
 	

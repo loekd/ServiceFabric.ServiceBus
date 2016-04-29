@@ -30,7 +30,7 @@ namespace SampleQueueListeningStatelessService
 			yield return new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
 				new Handler(this)
 				, context
-				, serviceBusQueueName));
+				, serviceBusQueueName), "StatelessService-ServiceBusQueueListener");
 		}
 
 		

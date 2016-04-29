@@ -38,7 +38,7 @@ namespace SampleSubscriptionListeningStatefulService
 				new Handler(this)
 				, context
 				, serviceBusTopicName
-				, serviceBusSubscriptionName));
+				, serviceBusSubscriptionName), "StatefulService-ServiceBusSubscriptionListener");
 		}
 
 		internal sealed class Handler : AutoCompleteServiceBusMessageReceiver
