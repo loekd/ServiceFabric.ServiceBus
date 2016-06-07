@@ -15,19 +15,14 @@
     "content/": "content/**"
   },
   "frameworks": {
-    "net451": {
-      "dependencies": {
-        "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1"
-      }
+    "net451": {      
     },
-    "net460": {
-      "dependencies": {
-        "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1"
-      }
+    "net460": {     
     }
   },
   "dependencies": {
     "Microsoft.ServiceFabric.Services": "2.0.217",
-    "WindowsAzure.ServiceBus": "3.2.2"
+    "WindowsAzure.ServiceBus": "3.2.2",
+    "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1"
   }
 }

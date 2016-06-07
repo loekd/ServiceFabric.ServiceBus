@@ -6,13 +6,13 @@
       "Microsoft.ServiceFabric/5.0.217": {
         "type": "package",
         "compile": {
-          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
           "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
           "lib/net45/System.Fabric.dll": {}
         },
         "runtime": {
-          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
           "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
           "lib/net45/System.Fabric.dll": {}
         },
         "resource": {
@@ -30,12 +30,12 @@
           "System.Runtime.Serialization"
         ],
         "compile": {
-          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {},
-          "lib/net45/Microsoft.ServiceFabric.Data.dll": {}
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
         },
         "runtime": {
-          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {},
-          "lib/net45/Microsoft.ServiceFabric.Data.dll": {}
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
         }
       },
       "Microsoft.ServiceFabric.Services/2.0.217": {
@@ -48,7 +48,8 @@
           "lib/net45/Microsoft.ServiceFabric.Services.dll": {}
         },
         "runtime": {
-          "lib/net45/Microsoft.ServiceFabric.Services.dll": {}
+          "lib/net45/Microsoft.ServiceFabric.Services.dll": {},
+          "lib/net45/ServiceFabricServiceModel.dll": {}
         }
       },
       "Microsoft.WindowsAzure.ConfigurationManager/3.2.1": {
@@ -75,17 +76,17 @@
         }
       }
     },
-    ".NETFramework,Version=v4.6": {
+    ".NETFramework,Version=v4.6.0": {
       "Microsoft.ServiceFabric/5.0.217": {
         "type": "package",
         "compile": {
-          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
           "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
           "lib/net45/System.Fabric.dll": {}
         },
         "runtime": {
-          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
           "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
           "lib/net45/System.Fabric.dll": {}
         },
         "resource": {
@@ -103,12 +104,12 @@
           "System.Runtime.Serialization"
         ],
         "compile": {
-          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {},
-          "lib/net45/Microsoft.ServiceFabric.Data.dll": {}
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
         },
         "runtime": {
-          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {},
-          "lib/net45/Microsoft.ServiceFabric.Data.dll": {}
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
         }
       },
       "Microsoft.ServiceFabric.Services/2.0.217": {
@@ -121,7 +122,304 @@
           "lib/net45/Microsoft.ServiceFabric.Services.dll": {}
         },
         "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Services.dll": {},
+          "lib/net45/ServiceFabricServiceModel.dll": {}
+        }
+      },
+      "Microsoft.WindowsAzure.ConfigurationManager/3.2.1": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
+        }
+      },
+      "WindowsAzure.ServiceBus/3.2.2": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Runtime.Serialization",
+          "System.ServiceModel",
+          "System.Xml"
+        ],
+        "compile": {
+          "lib/net45-full/Microsoft.ServiceBus.dll": {}
+        },
+        "runtime": {
+          "lib/net45-full/Microsoft.ServiceBus.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.1/win7-x86": {
+      "Microsoft.ServiceFabric/5.0.217": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
+          "lib/net45/System.Fabric.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
+          "lib/net45/System.Fabric.dll": {}
+        },
+        "resource": {
+          "lib/net45/en-us/Microsoft.ServiceFabric.Internal.Strings.resources.dll": {
+            "locale": "en-us"
+          }
+        }
+      },
+      "Microsoft.ServiceFabric.Data/2.0.217": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ServiceFabric": "[5.0.217]"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
+        }
+      },
+      "Microsoft.ServiceFabric.Services/2.0.217": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ServiceFabric": "[5.0.217]",
+          "Microsoft.ServiceFabric.Data": "[2.0.217]"
+        },
+        "compile": {
           "lib/net45/Microsoft.ServiceFabric.Services.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Services.dll": {},
+          "lib/net45/ServiceFabricServiceModel.dll": {}
+        }
+      },
+      "Microsoft.WindowsAzure.ConfigurationManager/3.2.1": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
+        }
+      },
+      "WindowsAzure.ServiceBus/3.2.2": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Runtime.Serialization",
+          "System.ServiceModel",
+          "System.Xml"
+        ],
+        "compile": {
+          "lib/net45-full/Microsoft.ServiceBus.dll": {}
+        },
+        "runtime": {
+          "lib/net45-full/Microsoft.ServiceBus.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.1/win7-x64": {
+      "Microsoft.ServiceFabric/5.0.217": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
+          "lib/net45/System.Fabric.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
+          "lib/net45/System.Fabric.dll": {}
+        },
+        "resource": {
+          "lib/net45/en-us/Microsoft.ServiceFabric.Internal.Strings.resources.dll": {
+            "locale": "en-us"
+          }
+        }
+      },
+      "Microsoft.ServiceFabric.Data/2.0.217": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ServiceFabric": "[5.0.217]"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
+        }
+      },
+      "Microsoft.ServiceFabric.Services/2.0.217": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ServiceFabric": "[5.0.217]",
+          "Microsoft.ServiceFabric.Data": "[2.0.217]"
+        },
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Services.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Services.dll": {},
+          "lib/net45/ServiceFabricServiceModel.dll": {}
+        }
+      },
+      "Microsoft.WindowsAzure.ConfigurationManager/3.2.1": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
+        }
+      },
+      "WindowsAzure.ServiceBus/3.2.2": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Runtime.Serialization",
+          "System.ServiceModel",
+          "System.Xml"
+        ],
+        "compile": {
+          "lib/net45-full/Microsoft.ServiceBus.dll": {}
+        },
+        "runtime": {
+          "lib/net45-full/Microsoft.ServiceBus.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.0/win7-x86": {
+      "Microsoft.ServiceFabric/5.0.217": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
+          "lib/net45/System.Fabric.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
+          "lib/net45/System.Fabric.dll": {}
+        },
+        "resource": {
+          "lib/net45/en-us/Microsoft.ServiceFabric.Internal.Strings.resources.dll": {
+            "locale": "en-us"
+          }
+        }
+      },
+      "Microsoft.ServiceFabric.Data/2.0.217": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ServiceFabric": "[5.0.217]"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
+        }
+      },
+      "Microsoft.ServiceFabric.Services/2.0.217": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ServiceFabric": "[5.0.217]",
+          "Microsoft.ServiceFabric.Data": "[2.0.217]"
+        },
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Services.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Services.dll": {},
+          "lib/net45/ServiceFabricServiceModel.dll": {}
+        }
+      },
+      "Microsoft.WindowsAzure.ConfigurationManager/3.2.1": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
+        }
+      },
+      "WindowsAzure.ServiceBus/3.2.2": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Runtime.Serialization",
+          "System.ServiceModel",
+          "System.Xml"
+        ],
+        "compile": {
+          "lib/net45-full/Microsoft.ServiceBus.dll": {}
+        },
+        "runtime": {
+          "lib/net45-full/Microsoft.ServiceBus.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.0/win7-x64": {
+      "Microsoft.ServiceFabric/5.0.217": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
+          "lib/net45/System.Fabric.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Internal.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll": {},
+          "lib/net45/System.Fabric.dll": {}
+        },
+        "resource": {
+          "lib/net45/en-us/Microsoft.ServiceFabric.Internal.Strings.resources.dll": {
+            "locale": "en-us"
+          }
+        }
+      },
+      "Microsoft.ServiceFabric.Data/2.0.217": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ServiceFabric": "[5.0.217]"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Data.dll": {},
+          "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll": {}
+        }
+      },
+      "Microsoft.ServiceFabric.Services/2.0.217": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ServiceFabric": "[5.0.217]",
+          "Microsoft.ServiceFabric.Data": "[2.0.217]"
+        },
+        "compile": {
+          "lib/net45/Microsoft.ServiceFabric.Services.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.ServiceFabric.Services.dll": {},
+          "lib/net45/ServiceFabricServiceModel.dll": {}
         }
       },
       "Microsoft.WindowsAzure.ConfigurationManager/3.2.1": {
@@ -151,77 +449,72 @@
   },
   "libraries": {
     "Microsoft.ServiceFabric/5.0.217": {
-      "sha512": "tyr5TSLu7Eza1j2/VRYvUagRxJKyidfN+ZmVcDblT9U6SSykGkU6iaKWCdtqP9G2ugeiMl7IsBe7WRUPQduVfQ==",
       "type": "package",
+      "sha512": "tyr5TSLu7Eza1j2/VRYvUagRxJKyidfN+ZmVcDblT9U6SSykGkU6iaKWCdtqP9G2ugeiMl7IsBe7WRUPQduVfQ==",
       "files": [
-        "Microsoft.ServiceFabric.5.0.217.nupkg.sha512",
-        "Microsoft.ServiceFabric.nuspec",
-        "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll",
+        "lib/net45/en-us/Microsoft.ServiceFabric.Internal.Strings.resources.dll",
         "lib/net45/Microsoft.ServiceFabric.Internal.dll",
+        "lib/net45/Microsoft.ServiceFabric.Internal.Strings.dll",
         "lib/net45/System.Fabric.dll",
         "lib/net45/System.Fabric.xml",
-        "lib/net45/en-us/Microsoft.ServiceFabric.Internal.Strings.resources.dll"
+        "Microsoft.ServiceFabric.5.0.217.nupkg.sha512",
+        "Microsoft.ServiceFabric.nuspec"
       ]
     },
     "Microsoft.ServiceFabric.Data/2.0.217": {
-      "sha512": "fmyLwW1V+YkEmSqxuOjKsTZnnHmVSsutvPKcHwKhhFYIT7//qXasYODLfmCIIAHPi537mFLUYeFvDAjLLpz4qw==",
       "type": "package",
+      "sha512": "fmyLwW1V+YkEmSqxuOjKsTZnnHmVSsutvPKcHwKhhFYIT7//qXasYODLfmCIIAHPi537mFLUYeFvDAjLLpz4qw==",
       "files": [
-        "Microsoft.ServiceFabric.Data.2.0.217.nupkg.sha512",
-        "Microsoft.ServiceFabric.Data.nuspec",
+        "lib/net45/Microsoft.ServiceFabric.Data.dll",
         "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.dll",
         "lib/net45/Microsoft.ServiceFabric.Data.Interfaces.xml",
-        "lib/net45/Microsoft.ServiceFabric.Data.dll",
-        "lib/net45/Microsoft.ServiceFabric.Data.xml"
+        "lib/net45/Microsoft.ServiceFabric.Data.xml",
+        "Microsoft.ServiceFabric.Data.2.0.217.nupkg.sha512",
+        "Microsoft.ServiceFabric.Data.nuspec"
       ]
     },
     "Microsoft.ServiceFabric.Services/2.0.217": {
-      "sha512": "1Z4dsMTdUlM8czQM+V3uGRgezS6igZxYXrcw9AQ/JCIOVQ7N/ypEftoiWNC8wRWxNs3H18iKp/oc6bGBIvHVVg==",
       "type": "package",
+      "sha512": "1Z4dsMTdUlM8czQM+V3uGRgezS6igZxYXrcw9AQ/JCIOVQ7N/ypEftoiWNC8wRWxNs3H18iKp/oc6bGBIvHVVg==",
       "files": [
-        "Microsoft.ServiceFabric.Services.2.0.217.nupkg.sha512",
-        "Microsoft.ServiceFabric.Services.nuspec",
         "lib/net45/Microsoft.ServiceFabric.Services.dll",
         "lib/net45/Microsoft.ServiceFabric.Services.xml",
-        "lib/net45/ServiceFabricServiceModel.dll"
+        "lib/net45/ServiceFabricServiceModel.dll",
+        "Microsoft.ServiceFabric.Services.2.0.217.nupkg.sha512",
+        "Microsoft.ServiceFabric.Services.nuspec"
       ]
     },
     "Microsoft.WindowsAzure.ConfigurationManager/3.2.1": {
-      "sha512": "92deJ/UgEChOtHb9eLYBsL1+Y38Y5hr+qwd7LB+iCwfIOvRsah3EUnGBjSNZxSydguXimIiJjsB4wQ2jXIqaIQ==",
       "type": "package",
+      "sha512": "92deJ/UgEChOtHb9eLYBsL1+Y38Y5hr+qwd7LB+iCwfIOvRsah3EUnGBjSNZxSydguXimIiJjsB4wQ2jXIqaIQ==",
       "files": [
+        "lib/net40/Microsoft.WindowsAzure.Configuration.dll",
+        "lib/net40/Microsoft.WindowsAzure.Configuration.xml",
         "Microsoft.WindowsAzure.ConfigurationManager.3.2.1.nupkg",
         "Microsoft.WindowsAzure.ConfigurationManager.3.2.1.nupkg.sha512",
-        "Microsoft.WindowsAzure.ConfigurationManager.nuspec",
-        "lib/net40/Microsoft.WindowsAzure.Configuration.dll",
-        "lib/net40/Microsoft.WindowsAzure.Configuration.xml"
+        "Microsoft.WindowsAzure.ConfigurationManager.nuspec"
       ]
     },
     "WindowsAzure.ServiceBus/3.2.2": {
-      "sha512": "I3WjnzlYoxUmgYXDgqNHafgZj81Qa5L5CWl5EJjyauONYh979KbCy2CQubdmoYJ69gFhmN4r4WR0QvufjD4JIg==",
       "type": "package",
+      "sha512": "I3WjnzlYoxUmgYXDgqNHafgZj81Qa5L5CWl5EJjyauONYh979KbCy2CQubdmoYJ69gFhmN4r4WR0QvufjD4JIg==",
       "files": [
-        "WindowsAzure.ServiceBus.3.2.2.nupkg.sha512",
-        "WindowsAzure.ServiceBus.nuspec",
         "content/app.config.install.xdt",
         "content/web.config.install.xdt",
         "lib/net45-full/Microsoft.ServiceBus.dll",
-        "lib/net45-full/Microsoft.ServiceBus.xml"
+        "lib/net45-full/Microsoft.ServiceBus.xml",
+        "WindowsAzure.ServiceBus.3.2.2.nupkg.sha512",
+        "WindowsAzure.ServiceBus.nuspec"
       ]
     }
   },
   "projectFileDependencyGroups": {
     "": [
       "Microsoft.ServiceFabric.Services >= 2.0.217",
-      "WindowsAzure.ServiceBus >= 3.2.2"
-    ],
-    ".NETFramework,Version=v4.5.1": [
+      "WindowsAzure.ServiceBus >= 3.2.2",
       "Microsoft.WindowsAzure.ConfigurationManager >= 3.2.1"
     ],
-    ".NETFramework,Version=v4.6": [
-      "Microsoft.WindowsAzure.ConfigurationManager >= 3.2.1"
-    ]
-  },
-  "tools": {},
-  "projectFileToolGroups": {}
+    ".NETFramework,Version=v4.5.1": [],
+    ".NETFramework,Version=v4.6.0": []
+  }
 }
