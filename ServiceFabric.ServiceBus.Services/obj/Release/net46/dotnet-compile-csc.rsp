@@ -1,0 +1,34 @@
+﻿-d:RELEASE
+-d:TRACE
+-d:NET46
+-nowarn:CS1701
+-nowarn:CS1702
+-nowarn:CS1705
+-optimize
+-t:library
+-debug:full
+-nostdlib
+-nologo
+"c:\PublicSources\GitHub\ServiceFabric.ServiceBus\ServiceFabric.ServiceBus.Services\obj\Release\net46\dotnet-compile.assemblyinfo.cs"
+-out:"c:\PublicSources\GitHub\ServiceFabric.ServiceBus\ServiceFabric.ServiceBus.Services\bin\Release\net46\ServiceFabric.ServiceBus.Services.dll"
+-r:"C:\Users\Admin\.nuget\packages\Microsoft.ServiceFabric\5.0.217\lib\net45\Microsoft.ServiceFabric.Internal.Strings.dll"
+-r:"C:\Users\Admin\.nuget\packages\Microsoft.ServiceFabric\5.0.217\lib\net45\Microsoft.ServiceFabric.Internal.dll"
+-r:"C:\Users\Admin\.nuget\packages\Microsoft.ServiceFabric\5.0.217\lib\net45\System.Fabric.dll"
+-r:"C:\Users\Admin\.nuget\packages\Microsoft.ServiceFabric.Data\2.0.217\lib\net45\Microsoft.ServiceFabric.Data.Interfaces.dll"
+-r:"C:\Users\Admin\.nuget\packages\Microsoft.ServiceFabric.Data\2.0.217\lib\net45\Microsoft.ServiceFabric.Data.dll"
+-r:"C:\Users\Admin\.nuget\packages\Microsoft.ServiceFabric.Services\2.0.217\lib\net45\Microsoft.ServiceFabric.Services.dll"
+-r:"C:\Users\Admin\.nuget\packages\Microsoft.WindowsAzure.ConfigurationManager\3.2.1\lib\net40\Microsoft.WindowsAzure.Configuration.dll"
+-r:"C:\Users\Admin\.nuget\packages\WindowsAzure.ServiceBus\3.2.2\lib\net45-full\Microsoft.ServiceBus.dll"
+-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\mscorlib.dll"
+-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.dll"
+-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.Core.dll"
+-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\Microsoft.CSharp.dll"
+-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.Runtime.Serialization.dll"
+-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.ServiceModel.dll"
+-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.Xml.dll"
+"c:\PublicSources\GitHub\ServiceFabric.ServiceBus\ServiceFabric.ServiceBus.Services\AutoCompleteServiceBusMessageReceiver.cs"
+"c:\PublicSources\GitHub\ServiceFabric.ServiceBus\ServiceFabric.ServiceBus.Services\IServiceBusMessageReceiver.cs"
+"c:\PublicSources\GitHub\ServiceFabric.ServiceBus\ServiceFabric.ServiceBus.Services\CommunicationListeners\ServiceBusCommunicationListener.cs"
+"c:\PublicSources\GitHub\ServiceFabric.ServiceBus\ServiceFabric.ServiceBus.Services\CommunicationListeners\ServiceBusQueueCommunicationListener.cs"
+"c:\PublicSources\GitHub\ServiceFabric.ServiceBus\ServiceFabric.ServiceBus.Services\CommunicationListeners\ServiceBusSubscriptionCommunicationListener.cs"
+"c:\PublicSources\GitHub\ServiceFabric.ServiceBus\ServiceFabric.ServiceBus.Services\Properties\AssemblyInfo.cs"

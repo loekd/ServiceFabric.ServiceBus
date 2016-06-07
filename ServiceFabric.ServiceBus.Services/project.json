@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "2.0.0",
   "requireLicenseAcceptance": true,
   "description": "Communicate to ServiceFabric Services through Service Bus. Add this package to your Reliable Service project. The ServiceFabric.ServiceBus.Services Class Library should be used in conjunction with ServiceFabric.ServiceBus.Client",
@@ -17,17 +17,17 @@
   "frameworks": {
     "net451": {
       "dependencies": {
-        "Microsoft.ServiceFabric.Services": "2.0.135",
-        "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1",
-        "WindowsAzure.ServiceBus": "3.1.7"
+        "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1"
       }
     },
     "net460": {
       "dependencies": {
-        "Microsoft.ServiceFabric.Services": "2.0.135",
-        "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1",
-        "WindowsAzure.ServiceBus": "3.1.7"
+        "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1"
       }
     }
+  },
+  "dependencies": {
+    "Microsoft.ServiceFabric.Services": "2.0.217",
+    "WindowsAzure.ServiceBus": "3.2.2"
   }
 }
