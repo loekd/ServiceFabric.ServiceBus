@@ -30,10 +30,11 @@ internal sealed class Handler : IServiceBusMessageReceiver
 		_service = service;
 	}
 
-	public void ReceiveMessage(BrokeredMessage message)
-	{
-		ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
-	}
+	public Task ReceiveMessageAsync(BrokeredMessage message, CancellationToken cancellationToken)
+        {
+            ServiceEventSource.Current.ServiceMessage(_service, $"Handling subscription message {message.MessageId}");
+            return Task.FromResult(true);
+        }
 }
 ```
 ------------------------------------
@@ -53,7 +54,7 @@ internal sealed class SampleQueueListeningStatefulService : StatefulService
 		yield return new ServiceReplicaListener(context => new ServiceBusQueueCommunicationListener(
 			new Handler(this)
 			, context				
-			, serviceBusQueueName), "ServiceBusEndPoint");
+			, serviceBusQueueName), "StatefulService-ServiceBusQueueListener");
 	}
 }
 ```
@@ -76,7 +77,7 @@ internal sealed class SampleSubscriptionListeningStatefulService : StatefulServi
 			new Handler(this)
 			, context			
 			, serviceBusTopicName
-			, serviceBusSubscriptionName));
+			, serviceBusSubscriptionName), "StatefulService-ServiceBusSubscriptionListener");
 	}
 }
 ```
@@ -96,7 +97,7 @@ internal sealed class SampleQueueListeningStatelessService : StatelessService
 		yield return new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
 			new Handler(this)
 			, context			
-			, serviceBusQueueName));
+			, serviceBusQueueName), "StatelessService-ServiceBusQueueListener");
 	}
 }
 ```
@@ -119,7 +120,7 @@ internal sealed class SampleSubscriptionListeningStatelessService : StatelessSer
 			new Handler(this)
 			, context
 			, serviceBusTopicName
-			, serviceBusSubscriptionName));
+			, serviceBusSubscriptionName), "StatelessService-ServiceBusSubscriptionListener");
 	}
 }
 ```
