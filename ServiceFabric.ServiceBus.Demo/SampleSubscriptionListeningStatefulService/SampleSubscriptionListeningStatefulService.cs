@@ -8,6 +8,7 @@ using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceFabric.Data;
 using ServiceFabric.ServiceBus.Services;
 using ServiceFabric.ServiceBus.Services.CommunicationListeners;
+using System.Threading.Tasks;
 
 namespace SampleSubscriptionListeningStatefulService
 {
@@ -50,11 +51,12 @@ namespace SampleSubscriptionListeningStatefulService
 				_service = service;
 			}
 
-			protected override void ReceiveMessageImpl(BrokeredMessage message, CancellationToken cancellationToken)
-			{
-				ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
-			}
-		}
+            protected override Task ReceiveMessageImplAsync(BrokeredMessage message, CancellationToken cancellationToken)
+            {
+                ServiceEventSource.Current.ServiceMessage(_service, $"Handling subscription message {message.MessageId}");
+                return Task.FromResult(true);
+            }
+        }
 
 		
 	}

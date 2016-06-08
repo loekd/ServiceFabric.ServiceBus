@@ -7,6 +7,7 @@ using Microsoft.Azure;
 using Microsoft.ServiceBus.Messaging;
 using ServiceFabric.ServiceBus.Services;
 using ServiceFabric.ServiceBus.Services.CommunicationListeners;
+using System.Threading.Tasks;
 
 namespace SampleQueueListeningStatelessService
 {
@@ -45,9 +46,11 @@ namespace SampleQueueListeningStatelessService
 			_service = service;
 		}
 
-		protected override void ReceiveMessageImpl(BrokeredMessage message, CancellationToken cancellationToken)
-		{
-			ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
-		}
-	}
+		
+        protected override Task ReceiveMessageImplAsync(BrokeredMessage message, CancellationToken cancellationToken)
+        {
+            ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
+            return Task.FromResult(true);
+        }
+    }
 }
