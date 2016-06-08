@@ -12,6 +12,18 @@ ServiceFabric.ServiceBus.Services
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services
 For creating a Communication Listener that receives messages from Azure Service Bus (Queue/Subscription).
 
+## Release notes:
+v3.0.0	
+- Handlers are now async to allow await in handling code. 
+- Upgraded all nuget packages.
+- Dispose BrokeredMessage after handling completes.
+
+v2.0.0
+- Upgraded to GA
+
+v1.0.0
+- First commit
+
 ### If you want to integrate this into an existing project, read on...
 ----------------------------------------------
 
