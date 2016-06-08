@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleSubscriptionListening
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleSubscriptionListeningStatelessService", "ServiceFabric.ServiceBus.Demo\SampleSubscriptionListeningStatelessService\SampleSubscriptionListeningStatelessService.csproj", "{6A6887CB-3C2E-4652-9D69-B7C0D9A1B397}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\TestClient.csproj", "{61D4830C-4ECB-46DB-8DE4-9B812A4D1182}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "ServiceFabric.ServiceBus.Demo\TestClient\TestClient.csproj", "{61D4830C-4ECB-46DB-8DE4-9B812A4D1182}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
