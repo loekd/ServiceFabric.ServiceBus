@@ -3,10 +3,14 @@ Need some help to get started? Have a look at: 'https://github.com/loekd/Service
 
 ## Nuget Packages:
 ServiceFabric.ServiceBus.Clients
-https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients/2.0.0
+https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients
+For communication to Service Fabric Reliable Services using the Communication Listener from the package 'ServiceFabric.ServiceBus.Services'.
+Provides a ServiceBusTopicCommunicationClient to be used with 'ServicePartitionClient'.
+*If you post messages to Service Bus in a different way, you won't need this package.*
+
 ServiceFabric.ServiceBus.Services
-https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services/2.0.0
-(supports the GA version of Azure Service Fabric)
+https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services
+For creating a Communication Listener that receives messages from Azure Service Bus (Queue/Subscription).
 
 ### If you want to integrate this into an existing project, read on...
 ----------------------------------------------
