@@ -18,25 +18,6 @@ namespace ServiceFabric.ServiceBus.Services
         /// </summary>
         /// <param name="message">The incoming Service Bus Message to process</param>
         /// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
-        public void ReceiveMessage(BrokeredMessage message, CancellationToken cancellationToken)
-        {
-            ReceiveMessageImplAsync(message, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        /// Processes a message. Must perform error handling and also message completion or abandoning.
-        /// </summary>
-        /// <param name="message">The incoming Service Bus Message to process</param>
-        public void ReceiveMessage(BrokeredMessage message)
-        {
-            ReceiveMessage(message, CancellationToken.None);
-        }
-
-        // <summary>
-        /// Processes a message. Must perform error handling and also message completion or abandoning.
-        /// </summary>
-        /// <param name="message">The incoming Service Bus Message to process</param>
-        /// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
         public Task ReceiveMessageAsync(BrokeredMessage message, CancellationToken cancellationToken)
         {
             Task result = null;
@@ -52,15 +33,6 @@ namespace ServiceFabric.ServiceBus.Services
                 //assuming implementing code handles exceptions.
             }
             return result;
-        }
-
-        /// <summary>
-		/// Processes a message. Must perform error handling and also message completion or abandoning.
-		/// </summary>
-		/// <param name="message">The incoming Service Bus Message to process</param>
-        public Task ReceiveMessageAsync(BrokeredMessage message)
-        {
-            return ReceiveMessageAsync(message, CancellationToken.None);
         }
 
         /// <summary>

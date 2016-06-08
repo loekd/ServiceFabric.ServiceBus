@@ -14,13 +14,6 @@ namespace ServiceFabric.ServiceBus.Services
 		/// </summary>
 		/// <param name="message">The incoming Service Bus Message to process</param>
 		/// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
-		void ReceiveMessage(BrokeredMessage message, CancellationToken cancellationToken);
-
-        /// <summary>
-		/// Processes a message. Must perform error handling and also message completion or abandoning.
-		/// </summary>
-		/// <param name="message">The incoming Service Bus Message to process</param>
-		/// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
 		Task ReceiveMessageAsync(BrokeredMessage message, CancellationToken cancellationToken);
     }
 }

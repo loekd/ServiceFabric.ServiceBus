@@ -88,7 +88,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 		/// </summary>
 		private void ListenForMessages()
 		{
-			ThreadStart ts = () =>
+			ThreadStart ts = async () =>
 			{
 				while (!StopProcessingMessageToken.IsCancellationRequested)
 				{
@@ -96,7 +96,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 					foreach (var message in messages)
 					{
 						if (StopProcessingMessageToken.IsCancellationRequested) break;
-						ReceiveMessage(message);
+						await ReceiveMessageAsync(message);
 					}
 				}
 			};
