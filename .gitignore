@@ -17,3 +17,5 @@
 /ServiceFabric.ServiceBus.Demo/SampleSubscriptionListeningStatefulService/bin/*
 /ServiceFabric.ServiceBus.Demo/SampleQueueListeningStatelessService/obj/*
 /ServiceFabric.ServiceBus.Demo/SampleQueueListeningStatelessService/bin/*
+/ServiceFabric.ServiceBus.Demo/TestClient/bin
+/ServiceFabric.ServiceBus.Demo/TestClient/ReadMe.txt
