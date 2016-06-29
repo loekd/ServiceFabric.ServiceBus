@@ -18,12 +18,11 @@ namespace ServiceFabric.ServiceBus.Services
         /// </summary>
         /// <param name="message">The incoming Service Bus Message to process</param>
         /// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
-        public Task ReceiveMessageAsync(BrokeredMessage message, CancellationToken cancellationToken)
+        public async Task ReceiveMessageAsync(BrokeredMessage message, CancellationToken cancellationToken)
         {
-            Task result = null;
             try
             {
-                result = ReceiveMessageImplAsync(message, cancellationToken);
+                await ReceiveMessageImplAsync(message, cancellationToken);
                 message.Complete();
             }
             catch
@@ -32,11 +31,14 @@ namespace ServiceFabric.ServiceBus.Services
                 //catch all to avoid process crash.
                 //assuming implementing code handles exceptions.
             }
-            return result;
+            finally
+            {
+                message.Dispose();
+            }
         }
 
         /// <summary>
-        /// (When overridden) Processes a message.
+        /// (When overridden) Processes a message.  Must perform error handling.
         /// </summary>
         /// <param name="message">The incoming Service Bus Message to process</param>
         /// <param name="cancellationToken">When Set, indicates that processing should stop.</param>

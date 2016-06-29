@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0",
   "requireLicenseAcceptance": true,
   "description": "Communicate to ServiceFabric Services through Service Bus. Add this package to your Reliable Service project. The ServiceFabric.ServiceBus.Services Class Library should be used in conjunction with ServiceFabric.ServiceBus.Client",
   "summary": "Adds Reliable communication to and between ServiceFabric Reliable Services, using Service Bus. Supports Queues and Topics. This is the Service Package.",
@@ -15,14 +15,14 @@
     "content/": "content/**"
   },
   "frameworks": {
-    "net451": {      
+    "net451": {    
     },
     "net460": {     
     }
   },
   "dependencies": {
-    "Microsoft.ServiceFabric.Services": "2.0.217",
-    "WindowsAzure.ServiceBus": "3.2.2",
-    "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1"
+    "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1",
+    "Microsoft.ServiceFabric.Services": "2.1.150",    
+    "WindowsAzure.ServiceBus": "3.3.0"
   }
 }
