@@ -19,3 +19,11 @@
 /ServiceFabric.ServiceBus.Demo/SampleQueueListeningStatelessService/bin/*
 /ServiceFabric.ServiceBus.Demo/TestClient/bin
 /ServiceFabric.ServiceBus.Demo/TestClient/ReadMe.txt
+*/obj/Release
+*/obj/Debug
+**/obj/Release
+**/obj/Debug
+
+**force
+
+**.dg
