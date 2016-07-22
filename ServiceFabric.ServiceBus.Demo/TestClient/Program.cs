@@ -75,7 +75,7 @@ namespace TestClient
 					case ConsoleKey.D1:
 					case ConsoleKey.NumPad1:
 						CreateServiceBusQueue(QueueNameStateless);
-						CreateServiceBusQueue(QueueNameStateful);
+						CreateServiceBusQueue(QueueNameStateful, true);
 						break;
 
 					case ConsoleKey.D2:
@@ -87,12 +87,12 @@ namespace TestClient
 					case ConsoleKey.D3:
 					case ConsoleKey.NumPad3:
 						CreateTopicSubscription(TopicNameStateless, SubscriptionNameStateless);
-						CreateTopicSubscription(TopicNameStateful, SubscriptionNameStateful);
+						CreateTopicSubscription(TopicNameStateful, SubscriptionNameStateful, true);
 						break;
 
 					case ConsoleKey.D4:
 					case ConsoleKey.NumPad4:
-						SendTestMessageToQueue(new Uri("fabric:/MyServiceFabricApp/SampleQueueListeningStatefulService"), QueueNameStateful, true);
+						SendTestMessageToQueue(new Uri("fabric:/MyServiceFabricApp/SampleQueueListeningStatefulService"), QueueNameStateful, true, true);
 						break;
 
 					case ConsoleKey.D5:
@@ -102,7 +102,7 @@ namespace TestClient
 
 					case ConsoleKey.D6:
 					case ConsoleKey.NumPad6:
-						SendTestMessageToTopic(new Uri("fabric:/MyServiceFabricApp/SampleSubscriptionListeningStatefulService"), TopicNameStateful, true);
+						SendTestMessageToTopic(new Uri("fabric:/MyServiceFabricApp/SampleSubscriptionListeningStatefulService"), TopicNameStateful, true, true);
 						break;
 
 					case ConsoleKey.D7:
@@ -151,26 +151,48 @@ namespace TestClient
 			Console.ReadKey(true);
 		}
 
-		private static void CreateTopicSubscription(string topicName, string subscriptionName)
+		private static void CreateTopicSubscription(string topicName, string subscriptionName, bool requireSessions = false)
 		{
 			var namespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionStringForManaging);
 			if (namespaceManager.SubscriptionExists(topicName, subscriptionName))
 			{
-				Console.WriteLine($"Subscription '{subscriptionName}' for Topic '{topicName}' exists.");
-				return;
+                if (namespaceManager.GetSubscription(topicName, subscriptionName).RequiresSession != requireSessions)
+                {
+                    Console.WriteLine($"Subscription '{subscriptionName}' will be deleted. Hit <enter> to confirm.");
+                    Console.ReadLine();
+                    namespaceManager.DeleteSubscription(topicName, subscriptionName);
+                    Thread.Sleep(5);
+                }
+                else
+                {
+                    Console.WriteLine($"Subscription '{subscriptionName}' for Topic '{topicName}' exists.");
+                    return;
+                }
 			}
-			namespaceManager.CreateSubscription(topicName, subscriptionName);
+			var subscription = namespaceManager.CreateSubscription(topicName, subscriptionName);
+            subscription.RequiresSession = requireSessions;
+
 			Console.WriteLine($"Created Subscription '{subscriptionName}' for Topic '{topicName}'.");
 		}
 
-		private static void CreateServiceBusQueue(string queueName)
+		private static void CreateServiceBusQueue(string queueName, bool requireSessions = false)
 		{
 			var namespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionStringForManaging);
 
 			if (namespaceManager.QueueExists(queueName))
 			{
-				Console.WriteLine($"Queue '{queueName}' exists.");
-				return;
+                if (namespaceManager.GetQueue(queueName).RequiresSession != requireSessions)
+                {
+                    Console.WriteLine($"Queue '{queueName}' will be deleted. Hit <enter> to confirm.");
+                    Console.ReadLine();
+                    namespaceManager.DeleteQueue(queueName);
+                    Thread.Sleep(5);
+                }
+                else
+                {
+                    Console.WriteLine($"Queue '{queueName}' exists.");
+                    return;
+                }
 			}
 
 			var qd = new QueueDescription(queueName);
@@ -178,6 +200,7 @@ namespace TestClient
 			var receiveKey = SharedAccessAuthorizationRule.GenerateRandomKey();
 			qd.Authorization.Add(new SharedAccessAuthorizationRule("SendKey", sendKey, new[] { AccessRights.Send }));
 			qd.Authorization.Add(new SharedAccessAuthorizationRule("ReceiveKey", receiveKey, new[] { AccessRights.Listen }));
+            qd.RequiresSession = requireSessions;
 
 			namespaceManager.CreateQueue(qd);
 			Console.WriteLine($"Created queue '{queueName}'.");
@@ -195,7 +218,7 @@ namespace TestClient
 		}
 
 		
-		private static void SendTestMessageToTopic(Uri uri, string topicName, bool serviceSupportsPartitions)
+		private static void SendTestMessageToTopic(Uri uri, string topicName, bool serviceSupportsPartitions, bool requireSessions = false)
 		{
 			//the name of your application and the name of the Service, the default partition resolver and the topic name
 			//to create a communication client factory:
@@ -215,12 +238,12 @@ namespace TestClient
 			}
 			
 			//use the proxy to send a message to the Service
-			servicePartitionClient.InvokeWithRetry(c => c.SendMessage(CreateMessage()));
+			servicePartitionClient.InvokeWithRetry(c => c.SendMessage(CreateMessage(requireSessions)));
 
 			Console.WriteLine("Message sent to topic");
 		}
 		
-		private static void SendTestMessageToQueue(Uri uri, string queueName, bool serviceSupportsPartitions)
+		private static void SendTestMessageToQueue(Uri uri, string queueName, bool serviceSupportsPartitions, bool requireSessions = false)
 		{
 			//the name of your application and the name of the Service, the default partition resolver and the topic name
 			//to create a communication client factory:
@@ -240,20 +263,27 @@ namespace TestClient
 			}
 
 			//use the proxy to send a message to the Service
-			servicePartitionClient.InvokeWithRetry(c => c.SendMessage(CreateMessage()));
+			servicePartitionClient.InvokeWithRetry(c => c.SendMessage(CreateMessage(requireSessions)));
 
 			Console.WriteLine("Message sent to queue");
 		}
 
-		private static BrokeredMessage CreateMessage()
+		private static BrokeredMessage CreateMessage(bool requireSessions)
 		{
-			return new BrokeredMessage()
+			var message = new BrokeredMessage()
 			{
 				Properties =
 				{
 					{ "TestKey", "TestValue" }
 				}
 			};
+
+            if (requireSessions)
+            {
+
+                message.SessionId = Guid.NewGuid().ToString("N");
+            }
+            return message;
 		}
 	}
 }
