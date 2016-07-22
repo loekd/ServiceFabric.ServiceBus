@@ -1,30 +1,30 @@
 {
-  "version": "3.1.0",
-  "requireLicenseAcceptance": true,
-  "description": "Communicate to ServiceFabric Services through Service Bus. Add this package to a project that will communicate to Reliable Services. The ServiceFabric.ServiceBus.Client Class Library should be used in conjunction with ServiceFabric.ServiceBus.Services Class Library",
-  "summary": "Adds Reliable communication to and between ServiceFabric Reliable Services, using Service Bus. Supports Queues and Topics. This is the Client Package.",
-  "authors": [ "Loek Duys" ],
-  "tags": [ "ServiceFabric", "Service", "Fabric", "ServiceBus", "Bus", "Reliable" ],
-  "projectUrl": "https://github.com/loekd/ServiceFabric.ServiceBus",
-  "licenseUrl": "https://github.com/loekd/ServiceFabric.ServiceBus/blob/master/LICENSE",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/loekd/ServiceFabric.ServiceBus.git"
-  },
-  "packInclude": {
-    "content/": "content/**"
-  },
-  "frameworks": {
-    "net451": {
-      "dependencies": {       
-      }
+  "version": "3.2.1",
+  "packOptions": {
+    "requireLicenseAcceptance": true,
+    "description": "Communicate to ServiceFabric Services through Service Bus. Add this package to a project that will communicate to Reliable Services. The ServiceFabric.ServiceBus.Client Class Library should be used in conjunction with ServiceFabric.ServiceBus.Services Class Library",
+    "summary": "Adds Reliable communication to and between ServiceFabric Reliable Services, using Service Bus. Supports Queues and Topics. This is the Client Package.",
+    "tags": [ "ServiceFabric", "Service", "Fabric", "ServiceBus", "Bus", "Reliable" ],
+    "projectUrl": "https://github.com/loekd/ServiceFabric.ServiceBus",
+    "licenseUrl": "https://github.com/loekd/ServiceFabric.ServiceBus/blob/master/LICENSE",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/loekd/ServiceFabric.ServiceBus.git"
     },
-    "net460": {      
+    "files": {
+      "include": "content/**"
+    }
+  },
+  "authors": [ "Loek Duys" ],
+  "frameworks": {
+    "net451": {     
+    },
+    "net460": {
     }
   },
   "dependencies": {
+    "Microsoft.ServiceFabric.Services": "2.1.163",
     "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1",
-    "Microsoft.ServiceFabric.Services": "2.1.150",
-    "WindowsAzure.ServiceBus": "3.3.0"
+    "WindowsAzure.ServiceBus": "3.3.1"
   }
 }
