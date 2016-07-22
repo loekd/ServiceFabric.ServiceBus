@@ -6,13 +6,18 @@ ServiceFabric.ServiceBus.Clients
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients
 For communication to Service Fabric Reliable Services using the Communication Listener from the package 'ServiceFabric.ServiceBus.Services'.
 Provides a ServiceBusTopicCommunicationClient to be used with 'ServicePartitionClient'.
-*If you post messages to Service Bus in a different way, you won't need this package.*
+*If you post messages to Service Bus in a different way, you won't need this client package.*
 
 ServiceFabric.ServiceBus.Services
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services
 For creating a Communication Listener that receives messages from Azure Service Bus (Queue/Subscription).
 
 ## Release notes:
+
+v3.2.1	
+- Added Session support and demo code that uses it. (requested by Aaron) 
+- Upgraded all nuget packages.
+
 v3.1.0	
 - Upgraded all nuget packages. (Newer SDK version)
 - Fixed async issue in AutoCompleteServiceBusMessageReceiver
