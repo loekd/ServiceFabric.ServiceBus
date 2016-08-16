@@ -27,3 +27,4 @@
 **force
 
 **.dg
+/ServiceFabric.ServiceBus.Services/obj/'Release'
