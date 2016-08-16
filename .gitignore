@@ -28,3 +28,4 @@
 
 **.dg
 /ServiceFabric.ServiceBus.Services/obj/'Release'
+/ServiceFabric.ServiceBus.Clients/obj/'Release'
