@@ -174,12 +174,12 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// Will pass an incoming message to the <see cref="Receiver"/> for processing.
         /// </summary>
         /// <param name="message"></param>
-        protected Task ReceiveMessageAsync(BrokeredMessage message)
+        protected async Task ReceiveMessageAsync(BrokeredMessage message)
         {
             try
             {
                 _processingMessage.Reset();
-                return Receiver.ReceiveMessageAsync(message, StopProcessingMessageToken);
+                await Receiver.ReceiveMessageAsync(message, StopProcessingMessageToken);
             }
             finally
             {
