@@ -14,6 +14,10 @@ For creating a Communication Listener that receives messages from Azure Service 
 
 ## Release notes:
 
+v3.2.2
+- Merged pull request by cpletz that addresses an await issue.
+- Upgraded all nuget packages.
+
 v3.2.1	
 - Added Session support and demo code that uses it. (requested by Aaron) 
 - Upgraded all nuget packages.
