@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 {
@@ -39,8 +39,9 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
         ///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
         ///  is used.</param>
-        public ServiceBusSubscriptionCommunicationListener(IServiceBusMessageReceiver receiver, ServiceContext context, string serviceBusTopicName, string serviceBusSubscriptionName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null)
-            : base(receiver, context, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
+	    /// <param name="requireSessions">Indicates whether the provided Message Queue requires sessions.</param>
+        public ServiceBusSubscriptionCommunicationListener(IServiceBusMessageReceiver receiver, ServiceContext context, string serviceBusTopicName, string serviceBusSubscriptionName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null, bool requireSessions = false)
+            : base(receiver, context, serviceBusSendConnectionString, serviceBusReceiveConnectionString, requireSessions)
         {
             if (string.IsNullOrWhiteSpace(serviceBusTopicName)) throw new ArgumentOutOfRangeException(nameof(serviceBusTopicName));
             if (string.IsNullOrWhiteSpace(serviceBusSubscriptionName)) throw new ArgumentOutOfRangeException(nameof(serviceBusSubscriptionName));
@@ -58,7 +59,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation. The result of the Task is
         ///             the endpoint string.
         /// </returns>
-        public override async Task<string> OpenAsync(CancellationToken cancellationToken)
+        public override Task<string> OpenAsync(CancellationToken cancellationToken)
         {
             //use receive url:
             _serviceBusClient = SubscriptionClient.CreateFromConnectionString(ServiceBusReceiveConnectionString, ServiceBusTopicName,
@@ -67,9 +68,8 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             {
                 _serviceBusClient.PrefetchCount = ServiceBusMessagePrefetchCount;
             }
-            bool requiresSession = await RequiresSession();
-
-            if (requiresSession)
+            
+            if (RequireSessions)
             {
                 ListenForSessionMessages();
             }
@@ -81,7 +81,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 
             //create send url:
             string uri = ServiceBusSendConnectionString;
-            return uri;
+            return Task.FromResult(uri);
         }
 
         /// <summary>
@@ -127,39 +127,32 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             {
                 while (!StopProcessingMessageToken.IsCancellationRequested)
                 {
-                    IEnumerable<BrokeredMessage> messages = null;
+                    MessageSession session = null;
                     try
                     {
-                        var session = _serviceBusClient.AcceptMessageSession(ServiceBusServerTimeout);
+                        session = _serviceBusClient.AcceptMessageSession(ServiceBusServerTimeout);
 
                         do
                         {
-                            messages = session.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout);
+                            var messages = session.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
+                            if (messages.Length == 0) break;
                             foreach (var message in messages)
                             {
                                 if (StopProcessingMessageToken.IsCancellationRequested) break;
                                 await ReceiveMessageAsync(message);
                             }
-                        }
-                        while (messages != null);
-                        session.Close();
+                        } while (!StopProcessingMessageToken.IsCancellationRequested);
                     }
                     catch (TimeoutException)
-                    { }
+                    {
+                    }
+                    finally
+                    {
+                        session?.Close();
+                    }
                 }
             };
             StartBackgroundThread(ts);
-        }
-
-        /// <summary>
-        /// Indicates whether the Subscription is configured to require session use.
-        /// </summary>
-        /// <returns></returns>
-        private async Task<bool> RequiresSession()
-        {
-            var namespaceMgr = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ServiceBusReceiveConnectionString);
-            var queue = await namespaceMgr.GetSubscriptionAsync(ServiceBusTopicName, ServiceBusSubscriptionName);
-            return queue.RequiresSession;
         }
     }
 }

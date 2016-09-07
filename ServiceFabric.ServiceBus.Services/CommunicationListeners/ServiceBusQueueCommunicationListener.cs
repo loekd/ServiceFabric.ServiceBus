@@ -5,41 +5,42 @@ using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 {
-	/// <summary>
-	/// Implementation of <see cref="ICommunicationListener"/> that listens to a Service Bus Queue.
-	/// </summary>
-	public class ServiceBusQueueCommunicationListener : ServiceBusCommunicationListener
-	{
-		private QueueClient _serviceBusClient;
-
-		/// <summary>
-		/// Gets the name of the monitored Service Bus Queue.
-		/// </summary>
-		protected string ServiceBusQueueName { get; }
+    /// <summary>
+    /// Implementation of <see cref="ICommunicationListener"/> that listens to a Service Bus Queue.
+    /// </summary>
+    public class ServiceBusQueueCommunicationListener : ServiceBusCommunicationListener
+    {
+        private QueueClient _serviceBusClient;
 
         /// <summary>
-        /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
+        /// Gets the name of the monitored Service Bus Queue.
         /// </summary>
-        /// <param name="receiver">(Required) Processes incoming messages.</param>
-        /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
-        /// <param name="serviceBusQueueName">The name of the monitored Service Bus Queue</param>
-        /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
-        /// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
-        ///  is used.</param>
-        /// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
-        ///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
-        ///  is used.</param>
-        public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, ServiceContext context, string serviceBusQueueName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null)
-			: base(receiver, context, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
-		{
-			if (string.IsNullOrWhiteSpace(serviceBusQueueName)) throw new ArgumentOutOfRangeException(nameof(serviceBusQueueName));
+        protected string ServiceBusQueueName { get; }
 
-			ServiceBusQueueName = serviceBusQueueName;
-		}
+        /// <summary>
+	    /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
+	    /// </summary>
+	    /// <param name="receiver">(Required) Processes incoming messages.</param>
+	    /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
+	    /// <param name="serviceBusQueueName">The name of the monitored Service Bus Queue</param>
+	    /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
+	    /// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
+	    ///  is used.</param>
+	    /// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
+	    ///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
+	    ///  is used.</param>
+	    /// <param name="requireSessions">Indicates whether the provided Message Queue requires sessions.</param>
+	    public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, ServiceContext context, string serviceBusQueueName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null, bool requireSessions = false)
+            : base(receiver, context, serviceBusSendConnectionString, serviceBusReceiveConnectionString, requireSessions)
+        {
+            if (string.IsNullOrWhiteSpace(serviceBusQueueName)) throw new ArgumentOutOfRangeException(nameof(serviceBusQueueName));
+
+            ServiceBusQueueName = serviceBusQueueName;
+        }
 
         /// <summary>
         /// This method causes the communication listener to be opened. Once the Open
@@ -50,7 +51,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation. The result of the Task is
         ///             the endpoint string.
         /// </returns>
-        public override async Task<string> OpenAsync(CancellationToken cancellationToken)
+        public override Task<string> OpenAsync(CancellationToken cancellationToken)
         {
             //use receive url:
             _serviceBusClient = QueueClient.CreateFromConnectionString(ServiceBusReceiveConnectionString, ServiceBusQueueName
@@ -61,9 +62,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
                 _serviceBusClient.PrefetchCount = ServiceBusMessagePrefetchCount;
             }
 
-            bool requiresSession = await RequiresSession();
-
-            if (requiresSession)
+            if (RequireSessions)
             {
                 ListenForSessionMessages();
             }
@@ -76,9 +75,9 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 
             //create send url:
             string uri = ServiceBusSendConnectionString;
-            return uri;
+            return Task.FromResult(uri);
         }
-        
+
         /// <summary>
         /// This method causes the communication listener to close. Close is a terminal state and 
         ///             this method allows the communication listener to transition to this state in a
@@ -89,29 +88,29 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation.
         /// </returns>
         protected override async Task CloseImplAsync(CancellationToken cancellationToken)
-		{
-			await _serviceBusClient.CloseAsync();
-		}
+        {
+            await _serviceBusClient.CloseAsync();
+        }
 
-		/// <summary>
-		/// Starts listening for messages on the configured Service Bus Queue.
-		/// </summary>
-		private void ListenForMessages()
-		{
-			ThreadStart ts = async () =>
-			{
-				while (!StopProcessingMessageToken.IsCancellationRequested)
-				{
-					var messages = _serviceBusClient.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout);
-					foreach (var message in messages)
-					{
-						if (StopProcessingMessageToken.IsCancellationRequested) break;
-						await ReceiveMessageAsync(message);
-					}
-				}
-			};
-			StartBackgroundThread(ts);
-		}
+        /// <summary>
+        /// Starts listening for messages on the configured Service Bus Queue.
+        /// </summary>
+        private void ListenForMessages()
+        {
+            ThreadStart ts = async () =>
+            {
+                while (!StopProcessingMessageToken.IsCancellationRequested)
+                {
+                    var messages = _serviceBusClient.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout);
+                    foreach (var message in messages)
+                    {
+                        if (StopProcessingMessageToken.IsCancellationRequested) break;
+                        await ReceiveMessageAsync(message);
+                    }
+                }
+            };
+            StartBackgroundThread(ts);
+        }
 
         /// <summary>
 		/// Starts listening for session messages on the configured Service Bus Queue.
@@ -122,39 +121,32 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             {
                 while (!StopProcessingMessageToken.IsCancellationRequested)
                 {
-                    IEnumerable<BrokeredMessage> messages = null;
+                    MessageSession session = null;
                     try
                     {
-                        var session = _serviceBusClient.AcceptMessageSession(ServiceBusServerTimeout);
+                        session = _serviceBusClient.AcceptMessageSession(ServiceBusServerTimeout);
 
                         do
                         {
-                            messages = session.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout);
+                            var messages = session.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
+                            if (messages.Length == 0) break;
                             foreach (var message in messages)
                             {
                                 if (StopProcessingMessageToken.IsCancellationRequested) break;
                                 await ReceiveMessageAsync(message);
                             }
                         }
-                        while (messages != null);
-                        session.Close();
+                        while (!StopProcessingMessageToken.IsCancellationRequested);
                     }
                     catch (TimeoutException)
                     { }
+                    finally
+                    {
+                        session?.Close();
+                    }
                 }
             };
             StartBackgroundThread(ts);
         }
-
-        /// <summary>
-        /// Indicates whether the Queue is configured to require session use.
-        /// </summary>
-        /// <returns></returns>
-        private async Task<bool> RequiresSession()
-        {
-            var namespaceMgr = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ServiceBusReceiveConnectionString);
-            var queue = await namespaceMgr.GetQueueAsync(ServiceBusQueueName);
-            return queue.RequiresSession;
-        }
-    }   
+    }
 }

@@ -48,6 +48,11 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         protected CancellationToken StopProcessingMessageToken { get; }
 
         /// <summary>
+        /// Indicates whether the Service Bus Queue or Subscription requires sessions.
+        /// </summary>
+        protected bool RequireSessions { get; private set; }
+
+        /// <summary>
         /// Gets or sets the batch size when receiving Service Bus Messages. (Defaults to 10)
         /// </summary>
         public int ServiceBusMessageBatchSize { get; set; } = 10;
@@ -79,10 +84,12 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
         ///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
         ///  is used.</param>
+	    /// <param name="requireSessions">Indicates whether the provided Message Queue requires sessions.</param>
         protected ServiceBusCommunicationListener(IServiceBusMessageReceiver receiver
             , ServiceContext context
             , string serviceBusSendConnectionString
-            , string serviceBusReceiveConnectionString)
+            , string serviceBusReceiveConnectionString
+            , bool requireSessions)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
@@ -95,6 +102,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             if (string.IsNullOrWhiteSpace(serviceBusSendConnectionString)) throw new ArgumentOutOfRangeException(nameof(serviceBusSendConnectionString));
             if (string.IsNullOrWhiteSpace(serviceBusReceiveConnectionString)) throw new ArgumentOutOfRangeException(nameof(serviceBusReceiveConnectionString));
 
+            RequireSessions = requireSessions;
             Context = context;
             Receiver = receiver;
             ServiceBusSendConnectionString = serviceBusSendConnectionString;
