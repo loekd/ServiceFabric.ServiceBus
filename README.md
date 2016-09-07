@@ -14,6 +14,11 @@ For creating a Communication Listener that receives messages from Azure Service 
 
 ## Release notes:
 
+v3.3.0
+- Fixed a permissions issue that was introduced with session support. (Communication Listeners required 'manage' permissions.) (Found by Denis.)
+  The option to use sessions is now a constructor argument for the Communication Listeners.
+- Upgraded all nuget packages.
+
 v3.2.2
 - Merged pull request by cpletz that addresses an await issue.
 - Upgraded all nuget packages.
