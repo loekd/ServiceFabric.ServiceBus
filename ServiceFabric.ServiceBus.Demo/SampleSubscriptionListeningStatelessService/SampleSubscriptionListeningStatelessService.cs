@@ -34,7 +34,8 @@ namespace SampleSubscriptionListeningStatelessService
 				new Handler(this)
 				, context
 				, serviceBusTopicName
-				, serviceBusSubscriptionName), "StatelessService-ServiceBusSubscriptionListener");
+				, serviceBusSubscriptionName
+                , requireSessions: false), "StatelessService-ServiceBusSubscriptionListener");
 		}
 
 	
