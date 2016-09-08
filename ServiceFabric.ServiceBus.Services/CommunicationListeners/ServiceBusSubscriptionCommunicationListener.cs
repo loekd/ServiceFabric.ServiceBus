@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Fabric;
 using System.Threading;
 using System.Threading.Tasks;
@@ -107,12 +108,9 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             {
                 while (!StopProcessingMessageToken.IsCancellationRequested)
                 {
-                    var messages = _serviceBusClient.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout);
-                    foreach (var message in messages)
-                    {
-                        if (StopProcessingMessageToken.IsCancellationRequested) break;
-                        await ReceiveMessageAsync(message);
-                    }
+                    var messages = _serviceBusClient.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
+                    if (messages.Length == 0) continue;
+                    await ProcessMessagesAsync(messages);
                 }
             };
             StartBackgroundThread(ts);
@@ -136,11 +134,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
                         {
                             var messages = session.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
                             if (messages.Length == 0) break;
-                            foreach (var message in messages)
-                            {
-                                if (StopProcessingMessageToken.IsCancellationRequested) break;
-                                await ReceiveMessageAsync(message);
-                            }
+                            await ProcessMessagesAsync(messages);
                         } while (!StopProcessingMessageToken.IsCancellationRequested);
                     }
                     catch (TimeoutException)
@@ -154,5 +148,8 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             };
             StartBackgroundThread(ts);
         }
+
+        
+
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Fabric;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure;
@@ -74,6 +76,18 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         public ReceiveMode ServiceBusReceiveMode { get; set; } = ReceiveMode.PeekLock;
 
         /// <summary>
+        /// Gets or set the interval at which message locks are renewed, while a batch is being processed. 
+        /// Set to the configured message lock duration (e.g. QueueDescription.LockDuration), minus a clock skew. (50 seconds works well when lockduration is 60s.) 
+        /// Set to null if no locks need to be renewed. (Defaults to null.)
+        /// </summary>
+        public TimeSpan? MessageLockRenewTimeSpan { get; set; }
+
+        /// <summary>
+        /// Gets or sets a callback for writing logs. (Defaults to null)
+        /// </summary>
+        public Action<string> LogAction { get; set; }
+
+        /// <summary>
         /// Creates a new instance.
         /// </summary>
         /// <param name="receiver">(Required) Processes incoming messages.</param>
@@ -134,6 +148,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// </returns>
         public Task CloseAsync(CancellationToken cancellationToken)
         {
+            WriteLog("Service Bus Communication Listnener closing");
             _stopProcessingMessageTokenSource.Cancel();
             //Wait for Message processing to complete..
             _processingMessage.WaitOne();
@@ -148,6 +163,8 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// </summary>
         public virtual void Abort()
         {
+            WriteLog("Service Bus Communication Listnener aborting");
+
             Dispose();
         }
 
@@ -194,6 +211,47 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
                 message.Dispose();
                 _processingMessage.Set();
             }
+        }
+
+        /// <summary>
+        /// Returns a set of timers that will be used to renew message locks, if <see cref="MessageLockRenewTimeSpan"/> has a value.
+        /// </summary>
+        /// <param name="messages"></param>
+        /// <returns></returns>
+        protected MessageLockRenewTimerSet CreateRenewTimer(ICollection<BrokeredMessage> messages)
+        {
+            var timers = MessageLockRenewTimeSpan.HasValue ? new MessageLockRenewTimerSet(messages, MessageLockRenewTimeSpan.Value, LogAction) : new MessageLockRenewTimerSet();
+            return timers;
+        }
+
+        /// <summary>
+        /// Processes the provided set of <see cref="BrokeredMessage"/>s, with optional automatic lock renewal.
+        /// </summary>
+        /// <param name="messages"></param>
+        /// <returns></returns>
+        protected async Task ProcessMessagesAsync(ICollection<BrokeredMessage> messages)
+        {
+            WriteLog($"Service Bus Communication Listnener processing {messages.Count} messages.");
+
+            var timers = CreateRenewTimer(messages);
+            foreach (var message in messages)
+            {
+                if (StopProcessingMessageToken.IsCancellationRequested) break;
+                using (timers[message])
+                {
+                    await ReceiveMessageAsync(message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Writes a log entry if <see cref="LogAction"/> is not null.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="callerMemberName"></param>
+        protected void WriteLog(string message, [CallerMemberName]string callerMemberName = "unknown")
+        {
+            LogAction?.Invoke($"{GetType().FullName} \t {callerMemberName} \t {message}");
         }
 
         /// <summary>

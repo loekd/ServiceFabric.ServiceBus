@@ -99,14 +99,14 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         {
             ThreadStart ts = async () =>
             {
+                WriteLog($"Service Bus Communication Listnener now listening for messages.");
+
                 while (!StopProcessingMessageToken.IsCancellationRequested)
                 {
-                    var messages = _serviceBusClient.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout);
-                    foreach (var message in messages)
-                    {
-                        if (StopProcessingMessageToken.IsCancellationRequested) break;
-                        await ReceiveMessageAsync(message);
-                    }
+                    var messages = _serviceBusClient.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
+                    if (messages.Length == 0) continue;
+
+                    await ProcessMessagesAsync(messages);
                 }
             };
             StartBackgroundThread(ts);
@@ -119,6 +119,8 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         {
             ThreadStart ts = async () =>
             {
+                WriteLog($"Service Bus Communication Listnener now listening for session messages.");
+
                 while (!StopProcessingMessageToken.IsCancellationRequested)
                 {
                     MessageSession session = null;
@@ -130,11 +132,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
                         {
                             var messages = session.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
                             if (messages.Length == 0) break;
-                            foreach (var message in messages)
-                            {
-                                if (StopProcessingMessageToken.IsCancellationRequested) break;
-                                await ReceiveMessageAsync(message);
-                            }
+                            await ProcessMessagesAsync(messages);
                         }
                         while (!StopProcessingMessageToken.IsCancellationRequested);
                     }
