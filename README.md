@@ -14,6 +14,29 @@ For creating a Communication Listener that receives messages from Azure Service 
 
 ## Release notes:
 
+v3.5.0
+- Added logging support.
+- Added automatic BrokeredMessage lock renewal option. 
+  
+  *How to use:* 
+  
+  Set the properties 'LogAction' and 'MessageLockRenewTimeSpan' on the Communication Listeners to enable:
+
+  ``` csharp
+  [..]
+  Action<string> logAction = log => ServiceEventSource.Current.ServiceMessage(this, log);
+  new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
+				new Handler(logAction)
+				, context
+				, serviceBusQueueName
+                , requireSessions: false)
+			{
+			    MessageLockRenewTimeSpan = TimeSpan.FromSeconds(50),  //auto renew every 50s, so processing can take longer than 60s (default lock duration).
+                LogAction = logAction
+			}, "StatelessService-ServiceBusQueueListener");
+ [..]
+  ```
+
 v3.3.0
 - Fixed a permissions issue that was introduced with session support. (Communication Listeners required 'manage' permissions.) (Found by Denis.)
   The option to use sessions is now a constructor argument for the Communication Listeners.
