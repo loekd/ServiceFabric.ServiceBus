@@ -1,4 +1,5 @@
-﻿using Microsoft.ServiceFabric.Services.Communication.Runtime;
+﻿using System;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using System.Collections.Generic;
 using System.Fabric;
@@ -28,11 +29,16 @@ namespace SampleQueueListeningStatelessService
 
 			// Also, define a QueueName:
 			string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
-			yield return new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
-				new Handler(this)
+		    Action<string> logAction = log => ServiceEventSource.Current.ServiceMessage(this, log);
+		    yield return new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
+				new Handler(logAction)
 				, context
 				, serviceBusQueueName
-                , requireSessions: false), "StatelessService-ServiceBusQueueListener");
+                , requireSessions: false)
+			{
+			    MessageLockRenewTimeSpan = TimeSpan.FromSeconds(50),  //auto renew every 50s, so processing can take longer than 60s (default lock duration).
+                LogAction = logAction
+			}, "StatelessService-ServiceBusQueueListener");
 		}
 
 		
@@ -40,17 +46,19 @@ namespace SampleQueueListeningStatelessService
 
 	internal sealed class Handler : AutoCompleteServiceBusMessageReceiver
 	{
-		private readonly StatelessService _service;
 
-		public Handler(StatelessService service)
+		public Handler(Action<string> logAction)
+            :base(logAction)
 		{
-			_service = service;
 		}
 
 		
         protected override Task ReceiveMessageImplAsync(BrokeredMessage message, CancellationToken cancellationToken)
         {
-            ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
+            WriteLog($"Sleeping for 7s while processing queue message {message.MessageId} to test message lock renew function (send more than 9 messages!).");
+            Thread.Sleep(TimeSpan.FromSeconds(7));
+
+            WriteLog($"Handling queue message {message.MessageId}");
             return Task.FromResult(true);
         }
     }

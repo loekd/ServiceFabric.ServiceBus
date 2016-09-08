@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Fabric;
 using System.Threading;
 using Microsoft.Azure;
@@ -29,32 +30,42 @@ namespace SampleSubscriptionListeningStatelessService
 			// Also, define Topic & Subscription Names:
 			string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
 			string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
+            Action<string> logAction = log => ServiceEventSource.Current.ServiceMessage(this, log);
 
-			yield return new ServiceInstanceListener(context => new ServiceBusSubscriptionCommunicationListener(
-				new Handler(this)
+            yield return new ServiceInstanceListener(context => new ServiceBusSubscriptionCommunicationListener(
+				new Handler(logAction)
 				, context
 				, serviceBusTopicName
 				, serviceBusSubscriptionName
-                , requireSessions: false), "StatelessService-ServiceBusSubscriptionListener");
+                , requireSessions: false)
+			{
+                LogAction = log => ServiceEventSource.Current.ServiceMessage(this, log),
+                MessageLockRenewTimeSpan = null //no auto renewal
+            }, "StatelessService-ServiceBusSubscriptionListener");
 		}
-
-	
 	}
 
 	internal sealed class Handler : AutoCompleteServiceBusMessageReceiver
 	{
-		private readonly StatelessService _service;
-
-		public Handler(StatelessService service)
-		{
-			_service = service;
-		}
+        public Handler(Action<string> logAction)
+            : base(logAction)
+        {
+        }
 
         protected override Task ReceiveMessageImplAsync(BrokeredMessage message, CancellationToken cancellationToken)
         {
-            ServiceEventSource.Current.ServiceMessage(_service, $"Handling subscription message {message.MessageId}");
+            WriteLog($"Sleeping for 7s while processing queue message {message.MessageId} to test message lock renew function (send more than 9 messages!).");
+            Thread.Sleep(TimeSpan.FromSeconds(7));
+
+            WriteLog($"Handling queue message {message.MessageId}");
             return Task.FromResult(true);
         }
-    }
+
+	    protected override bool HandleReceiveMessageError(BrokeredMessage message, Exception ex)
+	    {
+            WriteLog($"Handling Receive Message Error {message.MessageId}");
+            return true;
+	    }
+	}
 }
 
