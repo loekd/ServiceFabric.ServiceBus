@@ -14,6 +14,9 @@ For creating a Communication Listener that receives messages from Azure Service 
 
 ## Release notes:
 
+v3.6.0
+- Updated to new SDK, no other changes
+
 v3.5.0
 - Added logging support.
 - Added automatic BrokeredMessage lock renewal option. 

@@ -1,5 +1,5 @@
 {
-  "version": "3.5.0",
+  "version": "3.6.0",
   "packOptions": {
     "title": "ServiceFabric.ServiceBus.Clients",
     "requireLicenseAcceptance": true,
@@ -24,7 +24,7 @@
     }
   },
   "dependencies": {
-    "Microsoft.ServiceFabric.Services": "2.1.163",
+    "Microsoft.ServiceFabric.Services": "2.2.207",
     "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1",
     "WindowsAzure.ServiceBus": "3.3.2"
   }
