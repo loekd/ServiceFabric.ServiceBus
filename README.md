@@ -14,6 +14,14 @@ For creating a Communication Listener that receives messages from Azure Service 
 
 ## Release notes:
 
+v4.0.0
+- Some breaking changes in order to have full batch and session support. 
+- For batch support use: ServiceBusQueueBatchCommunicationListener and ServiceBusSubscriptionBatchCommunicationListener, combined with IServiceBusMessageBatchReceiver. 
+- For single message receive use: ServiceBusQueueCommunicationListener and ServiceBusSubscriptionCommunicationListener, combined with IServiceBusMessageReceiver.
+- Message handlers now provide the MessageSession if available.
+- Some properties are now obsolete to make naming more consistent.
+- Single messages are now received using the message pump.
+
 v3.6.0
 - Updated to new SDK, no other changes
 
