@@ -26,6 +26,6 @@
   "dependencies": {
     "Microsoft.ServiceFabric.Services": "2.2.207",
     "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1",
-    "WindowsAzure.ServiceBus": "3.4.0"
+    "WindowsAzure.ServiceBus": "3.3.2"
   }
 }
