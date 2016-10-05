@@ -108,10 +108,18 @@ namespace TestClient
                 Console.WriteLine("Send Messages to Reliable Services:");
 
                 Console.WriteLine("4: Send a message to SampleQueueListeningStatefulService");
+                Console.WriteLine("\t--> (uses sessions, receives separate messages)");
+
                 Console.WriteLine("5: Send a message to SampleQueueListeningStatelessService");
+                Console.WriteLine("\t--> (uses AutoRenewTimeout, receives separate messages)");
+
 
                 Console.WriteLine("6: Send a message to SampleSubscriptionListeningStatefulService.");
-                Console.WriteLine("7: Send a message to SampleSubscriptionListeningStatelessService.");
+                Console.WriteLine("\t--> (uses sessions, receives batches)");
+
+                Console.WriteLine("7: Send a message to SampleSubscriptionListeningStatelessService");
+                Console.WriteLine("\t--> (lock renew, receives batches)");
+
                 Console.WriteLine("L: List services and endpoints");
                 Console.WriteLine();
                 Console.WriteLine("Other: exit");
@@ -276,7 +284,8 @@ namespace TestClient
         {
             //the name of your application and the name of the Service, the default partition resolver and the topic name
             //to create a communication client factory:
-            var factory = new ServiceBusTopicCommunicationClientFactory(ServicePartitionResolver.GetDefault(), topicName);
+            var resolver = ServicePartitionResolver.GetDefault();
+            var factory = new ServiceBusTopicCommunicationClientFactory(resolver, null);
 
             ServicePartitionClient<ServiceBusTopicCommunicationClient> servicePartitionClient;
 
@@ -294,14 +303,14 @@ namespace TestClient
             //use the proxy to send a message to the Service
             servicePartitionClient.InvokeWithRetry(c => c.SendMessage(CreateMessage(requireSessions)));
 
-            Console.WriteLine("Message sent to topic");
+            Console.WriteLine($"Message sent to topic '{topicName}'");
         }
 
         private static void SendTestMessageToQueue(Uri uri, string queueName, bool serviceSupportsPartitions, bool requireSessions = false)
         {
             //the name of your application and the name of the Service, the default partition resolver and the topic name
             //to create a communication client factory:
-            var factory = new ServiceBusQueueCommunicationClientFactory(ServicePartitionResolver.GetDefault(), queueName);
+            var factory = new ServiceBusQueueCommunicationClientFactory(ServicePartitionResolver.GetDefault(), null);
 
             ServicePartitionClient<ServiceBusQueueCommunicationClient> servicePartitionClient;
 
@@ -319,7 +328,7 @@ namespace TestClient
             //use the proxy to send a message to the Service
             servicePartitionClient.InvokeWithRetry(c => c.SendMessage(CreateMessage(requireSessions)));
 
-            Console.WriteLine("Message sent to queue");
+            Console.WriteLine($"Message sent to queue '{queueName}'");
         }
 
         private static BrokeredMessage CreateMessage(bool requireSessions)
@@ -334,10 +343,18 @@ namespace TestClient
 
             if (requireSessions)
             {
-
-                message.SessionId = Guid.NewGuid().ToString("N");
+                if ((++_messagesInSession) >= _maxMessagesInSession)
+                {
+                    _messagesInSession = 0;
+                    _messageSessionId = Guid.NewGuid();
+                }
+                message.SessionId = _messageSessionId.ToString("N");
             }
             return message;
         }
+
+        private static Guid _messageSessionId = Guid.NewGuid();
+        private static int _messagesInSession;
+        private const int _maxMessagesInSession = 5;
     }
 }

@@ -28,14 +28,15 @@ namespace SampleQueueListeningStatefulService
 
 		protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
 		{
-			// In the configuration file, define connection strings: 
-			// "Microsoft.ServiceBus.ConnectionString.Receive"
-			// and "Microsoft.ServiceBus.ConnectionString.Send"
+            // In the configuration file, define connection strings: 
+            // "Microsoft.ServiceBus.ConnectionString.Receive"
+            // and "Microsoft.ServiceBus.ConnectionString.Send"
 
-			// Also, define a QueueName:
-			string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
-
-			yield return new ServiceReplicaListener(context => new ServiceBusQueueCommunicationListener(
+            // Also, define a QueueName:
+            //string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
+            string serviceBusQueueName = null; //using entity path.
+                                               //alternative: CloudConfigurationManager.GetSetting("QueueName");
+            yield return new ServiceReplicaListener(context => new ServiceBusQueueCommunicationListener(
 				new Handler(this)
 				, context
 				, serviceBusQueueName
@@ -54,9 +55,9 @@ namespace SampleQueueListeningStatefulService
 			_service = service;
 		}
         
-        protected override Task ReceiveMessageImplAsync(BrokeredMessage message, CancellationToken cancellationToken)
+        protected override Task ReceiveMessageImplAsync(BrokeredMessage message, MessageSession session, CancellationToken cancellationToken)
         {
-            ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
+            ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId} in session {session?.SessionId ?? "none"}");
             return Task.FromResult(true);
         }
     }

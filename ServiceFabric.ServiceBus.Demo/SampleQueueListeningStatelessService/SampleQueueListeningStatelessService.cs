@@ -28,7 +28,8 @@ namespace SampleQueueListeningStatelessService
 			// and "Microsoft.ServiceBus.ConnectionString.Send"
 
 			// Also, define a QueueName:
-			string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
+		    string serviceBusQueueName = null; //using entity path.
+            //alternative: CloudConfigurationManager.GetSetting("QueueName");
 		    Action<string> logAction = log => ServiceEventSource.Current.ServiceMessage(this, log);
 		    yield return new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
 				new Handler(logAction)
@@ -36,8 +37,9 @@ namespace SampleQueueListeningStatelessService
 				, serviceBusQueueName
                 , requireSessions: false)
 			{
-			    MessageLockRenewTimeSpan = TimeSpan.FromSeconds(50),  //auto renew every 50s, so processing can take longer than 60s (default lock duration).
-                LogAction = logAction
+			    AutoRenewTimeout = TimeSpan.FromSeconds(70),  //auto renew up until 70s, so processing can take no longer than 60s (default lock duration).
+                LogAction = logAction, 
+                MessagePrefetchCount = 10
 			}, "StatelessService-ServiceBusQueueListener");
 		}
 
@@ -52,8 +54,8 @@ namespace SampleQueueListeningStatelessService
 		{
 		}
 
-		
-        protected override Task ReceiveMessageImplAsync(BrokeredMessage message, CancellationToken cancellationToken)
+
+        protected override Task ReceiveMessageImplAsync(BrokeredMessage message, MessageSession session, CancellationToken cancellationToken)
         {
             WriteLog($"Sleeping for 7s while processing queue message {message.MessageId} to test message lock renew function (send more than 9 messages!).");
             Thread.Sleep(TimeSpan.FromSeconds(7));

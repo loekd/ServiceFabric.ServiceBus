@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Fabric;
+using System.Linq;
 using System.Threading;
 using Microsoft.Azure;
 using Microsoft.ServiceBus.Messaging;
@@ -28,11 +29,11 @@ namespace SampleSubscriptionListeningStatelessService
 			// and "Microsoft.ServiceBus.ConnectionString.Send"
 
 			// Also, define Topic & Subscription Names:
-			string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
+		    string serviceBusTopicName = null; //CloudConfigurationManager.GetSetting("TopicName");
 			string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
             Action<string> logAction = log => ServiceEventSource.Current.ServiceMessage(this, log);
 
-            yield return new ServiceInstanceListener(context => new ServiceBusSubscriptionCommunicationListener(
+            yield return new ServiceInstanceListener(context => new ServiceBusSubscriptionBatchCommunicationListener(
 				new Handler(logAction)
 				, context
 				, serviceBusTopicName
@@ -40,30 +41,37 @@ namespace SampleSubscriptionListeningStatelessService
                 , requireSessions: false)
 			{
                 LogAction = log => ServiceEventSource.Current.ServiceMessage(this, log),
-                MessageLockRenewTimeSpan = null //no auto renewal
+                MessageLockRenewTimeSpan = TimeSpan.FromSeconds(50),  //auto renew every 50s, so processing can take longer than 60s (default lock duration).
+                
             }, "StatelessService-ServiceBusSubscriptionListener");
 		}
 	}
 
-	internal sealed class Handler : AutoCompleteServiceBusMessageReceiver
-	{
+	internal sealed class Handler : AutoCompleteBatchServiceBusMessageReceiver
+    {
         public Handler(Action<string> logAction)
             : base(logAction)
         {
         }
 
-        protected override Task ReceiveMessageImplAsync(BrokeredMessage message, CancellationToken cancellationToken)
+        protected override Task ReceiveMessagesImplAsync(IEnumerable<BrokeredMessage> messages, MessageSession session, CancellationToken cancellationToken)
         {
-            WriteLog($"Sleeping for 7s while processing queue message {message.MessageId} to test message lock renew function (send more than 9 messages!).");
-            Thread.Sleep(TimeSpan.FromSeconds(7));
+            var brokeredMessages = messages.ToArray();
+            WriteLog($"Handling batch of {brokeredMessages.Count()}  queue messages");
 
-            WriteLog($"Handling queue message {message.MessageId}");
+            foreach (var message in brokeredMessages)
+            {
+                WriteLog($"Sleeping for 7s while processing queue message {message.MessageId} to test message lock renew function (send more than 9 messages!).");
+                Thread.Sleep(TimeSpan.FromSeconds(7));
+
+                WriteLog($"Handling queue message {message.MessageId}");
+            }
             return Task.FromResult(true);
         }
 
-	    protected override bool HandleReceiveMessageError(BrokeredMessage message, Exception ex)
+	    protected override bool HandleReceiveMessagesError(IEnumerable<BrokeredMessage> messages, Exception ex)
 	    {
-            WriteLog($"Handling Receive Message Error {message.MessageId}");
+            WriteLog($"Handling Receive Messages Error");
             return true;
 	    }
 	}

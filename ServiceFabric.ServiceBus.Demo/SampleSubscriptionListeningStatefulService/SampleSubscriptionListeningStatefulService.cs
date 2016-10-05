@@ -2,6 +2,7 @@
 using Microsoft.ServiceFabric.Services.Runtime;
 using System.Collections.Generic;
 using System.Fabric;
+using System.Linq;
 using System.Threading;
 using Microsoft.Azure;
 using Microsoft.ServiceBus.Messaging;
@@ -32,18 +33,21 @@ namespace SampleSubscriptionListeningStatefulService
 			// and "Microsoft.ServiceBus.ConnectionString.Send"
 
 			// Also, define Topic & Subscription Names:
-			string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
+		    string serviceBusTopicName = null; //CloudConfigurationManager.GetSetting("TopicName");
 			string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
 
-			yield return new ServiceReplicaListener(context => new ServiceBusSubscriptionCommunicationListener(
+			yield return new ServiceReplicaListener(context => new ServiceBusSubscriptionBatchCommunicationListener(
 				new Handler(this)
 				, context
 				, serviceBusTopicName
 				, serviceBusSubscriptionName
-                , requireSessions: true), "StatefulService-ServiceBusSubscriptionListener");
+                , requireSessions: true)
+			{
+                MessagePrefetchCount = 10
+			}, "StatefulService-ServiceBusSubscriptionListener");
 		}
 
-		internal sealed class Handler : AutoCompleteServiceBusMessageReceiver
+		internal sealed class Handler : AutoCompleteBatchServiceBusMessageReceiver
 		{
 			private readonly StatefulService _service;
 
@@ -52,9 +56,15 @@ namespace SampleSubscriptionListeningStatefulService
 				_service = service;
 			}
 
-            protected override Task ReceiveMessageImplAsync(BrokeredMessage message, CancellationToken cancellationToken)
+            protected override Task ReceiveMessagesImplAsync(IEnumerable<BrokeredMessage> messages, MessageSession session, CancellationToken cancellationToken)
             {
-                ServiceEventSource.Current.ServiceMessage(_service, $"Handling subscription message {message.MessageId}");
+                var brokeredMessages = messages.ToArray();
+                ServiceEventSource.Current.ServiceMessage(_service, $"Handling batch of {brokeredMessages.Count()}  queue messages");
+
+                foreach (var message in brokeredMessages)
+                {
+                    ServiceEventSource.Current.ServiceMessage(_service, $"Handling queue message {message.MessageId}");
+                }
                 return Task.FromResult(true);
             }
         }
