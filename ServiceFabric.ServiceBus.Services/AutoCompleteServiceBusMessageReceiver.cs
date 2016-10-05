@@ -32,7 +32,7 @@ namespace ServiceFabric.ServiceBus.Services
         }
 
         /// <summary>
-        /// Processes a message. Must perform error handling and also message completion or abandoning.
+        /// Processes a message. Automatically completes the message after handling, and abandons the lock if an error occurs. 
         /// </summary>
 	    /// <param name="messageSession">Contains the MessageSession when sessions are enabled.</param>
         /// <param name="message">The incoming Service Bus Message to process</param>
