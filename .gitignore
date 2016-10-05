@@ -29,3 +29,9 @@
 **.dg
 /ServiceFabric.ServiceBus.Services/obj/'Release'
 /ServiceFabric.ServiceBus.Clients/obj/'Release'
+/.vs
+/ServiceFabric.ServiceBus.Clients/bin/'Release'
+/ServiceFabric.ServiceBus.Demo/MyServiceFabricApp/obj/x64/Debug
+/ServiceFabric.ServiceBus.Services/bin
+/ServiceFabric.ServiceBus.Services/obj/'Debug'
+*.user
