@@ -1,150 +1,144 @@
 using System;
 using System.Fabric;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
-using System.Linq;
 
 namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 {
     /// <summary>
     /// Implementation of <see cref="ICommunicationListener"/> that listens to a Service Bus Queue.
     /// </summary>
-    public class ServiceBusQueueCommunicationListener : ServiceBusCommunicationListener
+    public class ServiceBusQueueCommunicationListener : ServiceBusQueueCommunicationListenerBase
     {
-        private QueueClient _serviceBusClient;
-
         /// <summary>
-        /// Gets the name of the monitored Service Bus Queue.
+        /// Gets or sets the AutoRenewTimeout that will be passed to the <see cref="Receiver"/>. Can be null.
         /// </summary>
-        protected string ServiceBusQueueName { get; }
+        public TimeSpan? AutoRenewTimeout { get; set; }
 
         /// <summary>
-	    /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
-	    /// </summary>
-	    /// <param name="receiver">(Required) Processes incoming messages.</param>
-	    /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
-	    /// <param name="serviceBusQueueName">The name of the monitored Service Bus Queue</param>
-	    /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
-	    /// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
-	    ///  is used.</param>
-	    /// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
-	    ///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
-	    ///  is used.</param>
-	    /// <param name="requireSessions">Indicates whether the provided Message Queue requires sessions.</param>
-	    public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, ServiceContext context, string serviceBusQueueName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null, bool requireSessions = false)
-            : base(receiver, context, serviceBusSendConnectionString, serviceBusReceiveConnectionString, requireSessions)
-        {
-            if (string.IsNullOrWhiteSpace(serviceBusQueueName)) throw new ArgumentOutOfRangeException(nameof(serviceBusQueueName));
-
-            ServiceBusQueueName = serviceBusQueueName;
-        }
-
-        /// <summary>
-        /// This method causes the communication listener to be opened. Once the Open
-        ///             completes, the communication listener becomes usable - accepts and sends messages.
+        /// (Ignored when using Sessions) Gets or sets the MaxConcurrentCalls that will be passed to the <see cref="Receiver"/>. Can be null. 
         /// </summary>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>
-        /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation. The result of the Task is
-        ///             the endpoint string.
-        /// </returns>
-        public override Task<string> OpenAsync(CancellationToken cancellationToken)
-        {
-            //use receive url:
-            _serviceBusClient = QueueClient.CreateFromConnectionString(ServiceBusReceiveConnectionString, ServiceBusQueueName
-                , ServiceBusReceiveMode);
-
-            if (ServiceBusMessagePrefetchCount > 0)
-            {
-                _serviceBusClient.PrefetchCount = ServiceBusMessagePrefetchCount;
-            }
-
-            if (RequireSessions)
-            {
-                ListenForSessionMessages();
-            }
-            else
-            {
-                ListenForMessages();
-            }
-
-            Thread.Yield();
-
-            //create send url:
-            string uri = ServiceBusSendConnectionString;
-            return Task.FromResult(uri);
-        }
+        public int? MaxConcurrentCalls { get; set; }
 
         /// <summary>
-        /// This method causes the communication listener to close. Close is a terminal state and 
-        ///             this method allows the communication listener to transition to this state in a
-        ///             graceful manner.
+        /// (Ignored when not using Sessions) Gets or sets the MaxConcurrentSessions that will be passed to the <see cref="Receiver"/>. Can be null. 
         /// </summary>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>
-        /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation.
-        /// </returns>
-        protected override async Task CloseImplAsync(CancellationToken cancellationToken)
+        public int? MaxConcurrentSessions { get; set; }
+
+        /// <summary>
+        /// Processor for messages.
+        /// </summary>
+        protected IServiceBusMessageReceiver Receiver { get; }
+
+        /// <summary>
+        /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
+        /// </summary>
+        /// <param name="receiver">(Required) Processes incoming messages.</param>
+        /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
+        /// <param name="serviceBusQueueName">The name of the monitored Service Bus Queue</param>
+        /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
+        /// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
+        ///  is used.</param>
+        /// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
+        ///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
+        ///  is used.</param>
+        /// <param name="requireSessions">Indicates whether the provided Message Queue requires sessions.</param>
+        public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, ServiceContext context, string serviceBusQueueName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null, bool requireSessions = false)
+            : base(context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString, requireSessions)
         {
-            await _serviceBusClient.CloseAsync();
+            Receiver = receiver;
         }
 
         /// <summary>
         /// Starts listening for messages on the configured Service Bus Queue.
         /// </summary>
-        private void ListenForMessages()
+        protected override void ListenForMessages()
         {
-            ThreadStart ts = async () =>
+            var options = new OnMessageOptions();
+            if (AutoRenewTimeout.HasValue)
             {
-                WriteLog($"Service Bus Communication Listnener now listening for messages.");
-
-                while (!StopProcessingMessageToken.IsCancellationRequested)
-                {
-                    var messages = _serviceBusClient.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
-                    if (messages.Length == 0) continue;
-
-                    await ProcessMessagesAsync(messages);
-                }
-            };
-            StartBackgroundThread(ts);
+                options.AutoRenewTimeout = AutoRenewTimeout.Value;
+            }
+            if (MaxConcurrentCalls.HasValue)
+            {
+                options.MaxConcurrentCalls = MaxConcurrentCalls.Value;
+            }
+            ServiceBusClient.OnMessageAsync(message => ReceiveMessageAsync(message, null), options);
         }
 
         /// <summary>
-		/// Starts listening for session messages on the configured Service Bus Queue.
-		/// </summary>
-        private void ListenForSessionMessages()
+        /// Starts listening for session messages on the configured Service Bus Queue.
+        /// </summary>
+        protected override void ListenForSessionMessages()
         {
-            ThreadStart ts = async () =>
+            var options = new SessionHandlerOptions();
+            if (AutoRenewTimeout.HasValue)
             {
-                WriteLog($"Service Bus Communication Listnener now listening for session messages.");
+                options.AutoRenewTimeout = AutoRenewTimeout.Value;
+            }
+            if (MaxConcurrentSessions.HasValue)
+            {
+                options.MaxConcurrentSessions = MaxConcurrentSessions.Value;
+            }
+            ServiceBusClient.RegisterSessionHandlerFactory(new SessionHandlerFactory(this), options);
+        }
 
-                while (!StopProcessingMessageToken.IsCancellationRequested)
+        private class SessionHandlerFactory : IMessageSessionAsyncHandlerFactory
+        {
+            private readonly ServiceBusQueueCommunicationListener _listener;
+
+            public SessionHandlerFactory(ServiceBusQueueCommunicationListener listener)
+            {
+                _listener = listener;
+            }
+
+            public IMessageSessionAsyncHandler CreateInstance(MessageSession session, BrokeredMessage message)
+            {
+                return new SessionHandler(_listener);
+            }
+
+            public void DisposeInstance(IMessageSessionAsyncHandler handler)
+            {
+            }
+        }
+
+        private class SessionHandler : MessageSessionAsyncHandler
+        {
+            private readonly ServiceBusQueueCommunicationListener _listener;
+
+            public SessionHandler(ServiceBusQueueCommunicationListener listener)
+            {
+                _listener = listener;
+            }
+            protected override Task OnMessageAsync(MessageSession session, BrokeredMessage message)
+            {
+                return _listener.ReceiveMessageAsync(message, session);
+            }
+        }
+
+        /// <summary>
+        /// Will pass an incoming message to the <see cref="Receiver"/> for processing.
+        /// </summary>
+        /// <param name="messageSession">Contains the MessageSession when sessions are enabled.</param>
+        /// <param name="message"></param>
+        protected async Task ReceiveMessageAsync(BrokeredMessage message, MessageSession messageSession)
+        {
+            try
+            {
+                ProcessingMessage.Reset();
+                await Receiver.ReceiveMessageAsync(message, messageSession, StopProcessingMessageToken);
+                if (Receiver.AutoComplete)
                 {
-                    MessageSession session = null;
-                    try
-                    {
-                        session = _serviceBusClient.AcceptMessageSession(ServiceBusServerTimeout);
-
-                        do
-                        {
-                            var messages = session.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
-                            if (messages.Length == 0) break;
-                            await ProcessMessagesAsync(messages);
-                        }
-                        while (!StopProcessingMessageToken.IsCancellationRequested);
-                    }
-                    catch (TimeoutException)
-                    { }
-                    finally
-                    {
-                        session?.Close();
-                    }
+                    await message.CompleteAsync();
                 }
-            };
-            StartBackgroundThread(ts);
+            }
+            finally
+            {
+                message.Dispose();
+                ProcessingMessage.Set();
+            }
         }
     }
 }

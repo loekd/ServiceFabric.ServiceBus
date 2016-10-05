@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
@@ -7,7 +8,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
     /// <summary>
     /// Holds a set of <see cref="MessageLockRenewTimer"/> instances for every provided <see cref="BrokeredMessage"/>.
     /// </summary>
-    public sealed class MessageLockRenewTimerSet
+    public sealed class MessageLockRenewTimerSet : IDisposable
     {
         private readonly Dictionary<BrokeredMessage, MessageLockRenewTimer> _timers;
 
@@ -58,6 +59,16 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         {
             public void Dispose()
             {
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_timers == null) return;
+
+            foreach (var timer in _timers.Values.ToArray())
+            {
+                timer.Dispose();
             }
         }
     }

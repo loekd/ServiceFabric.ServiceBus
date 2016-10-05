@@ -1,38 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Fabric;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
-using System.Linq;
 
 namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 {
     /// <summary>
-    /// Implementation of <see cref="ICommunicationListener"/> that listens to a Service Bus SubscriptionS.
+    /// Implementation of <see cref="ICommunicationListener"/> that listens to a Service Bus Queue.
     /// </summary>
-    public class ServiceBusSubscriptionCommunicationListener : ServiceBusCommunicationListener
+    public class ServiceBusSubscriptionCommunicationListener : ServiceBusSubscriptionCommunicationListenerBase
     {
-        private SubscriptionClient _serviceBusClient;
+        /// <summary>
+        /// Gets or sets the AutoRenewTimeout that will be passed to the <see cref="Receiver"/>. Can be null.
+        /// </summary>
+        public TimeSpan? AutoRenewTimeout { get; set; }
 
         /// <summary>
-        /// Gets the name of the monitored Service Bus Topic.
+        /// (Ignored when using Sessions) Gets or sets the MaxConcurrentCalls that will be passed to the <see cref="Receiver"/>. Can be null. 
         /// </summary>
-        protected string ServiceBusTopicName { get; }
+        public int? MaxConcurrentCalls { get; set; }
 
         /// <summary>
-        /// Gets the name of the monitored Service Bus Topic Subscription.
+        /// (Ignored when not using Sessions) Gets or sets the MaxConcurrentSessions that will be passed to the <see cref="Receiver"/>. Can be null. 
         /// </summary>
-        protected string ServiceBusSubscriptionName { get; }
+        public int? MaxConcurrentSessions { get; set; }
+
+        /// <summary>
+        /// Processor for messages.
+        /// </summary>
+        protected IServiceBusMessageReceiver Receiver { get; }
 
         /// <summary>
         /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
         /// </summary>
         /// <param name="receiver">(Required) Processes incoming messages.</param>
         /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
-        /// <param name="serviceBusTopicName">The name of the monitored Service Bus Topic</param>
+        /// <param name="serviceBusTopicName">The name of the monitored Service Bus Topic (optional, EntityPath is supported too)</param>
         /// <param name="serviceBusSubscriptionName">The name of the monitored Service Bus Topic Subscription</param>
         /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
         /// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
@@ -40,116 +45,102 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
         ///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
         ///  is used.</param>
-	    /// <param name="requireSessions">Indicates whether the provided Message Queue requires sessions.</param>
+        /// <param name="requireSessions">Indicates whether the provided Message Queue requires sessions.</param>
         public ServiceBusSubscriptionCommunicationListener(IServiceBusMessageReceiver receiver, ServiceContext context, string serviceBusTopicName, string serviceBusSubscriptionName, string serviceBusSendConnectionString = null, string serviceBusReceiveConnectionString = null, bool requireSessions = false)
-            : base(receiver, context, serviceBusSendConnectionString, serviceBusReceiveConnectionString, requireSessions)
+            : base(context, serviceBusTopicName, serviceBusSubscriptionName, serviceBusSendConnectionString, serviceBusReceiveConnectionString, requireSessions)
         {
-            if (string.IsNullOrWhiteSpace(serviceBusTopicName)) throw new ArgumentOutOfRangeException(nameof(serviceBusTopicName));
-            if (string.IsNullOrWhiteSpace(serviceBusSubscriptionName)) throw new ArgumentOutOfRangeException(nameof(serviceBusSubscriptionName));
-
-            ServiceBusTopicName = serviceBusTopicName;
-            ServiceBusSubscriptionName = serviceBusSubscriptionName;
+            Receiver = receiver;
         }
 
         /// <summary>
-        /// This method causes the communication listener to be opened. Once the Open
-        ///             completes, the communication listener becomes usable - accepts and sends messages.
+        /// Starts listening for messages on the configured Service Bus Queue.
         /// </summary>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>
-        /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation. The result of the Task is
-        ///             the endpoint string.
-        /// </returns>
-        public override Task<string> OpenAsync(CancellationToken cancellationToken)
+        protected override void ListenForMessages()
         {
-            //use receive url:
-            _serviceBusClient = SubscriptionClient.CreateFromConnectionString(ServiceBusReceiveConnectionString, ServiceBusTopicName,
-                ServiceBusSubscriptionName, ServiceBusReceiveMode);
-            if (ServiceBusMessagePrefetchCount > 0)
+            var options = new OnMessageOptions();
+            if (AutoRenewTimeout.HasValue)
             {
-                _serviceBusClient.PrefetchCount = ServiceBusMessagePrefetchCount;
+                options.AutoRenewTimeout = AutoRenewTimeout.Value;
             }
-            
-            if (RequireSessions)
+            if (MaxConcurrentCalls.HasValue)
             {
-                ListenForSessionMessages();
+                options.MaxConcurrentCalls = MaxConcurrentCalls.Value;
             }
-            else
-            {
-                ListenForMessages();
-            }
-            Thread.Yield();
-
-            //create send url:
-            string uri = ServiceBusSendConnectionString;
-            return Task.FromResult(uri);
+            ServiceBusClient.OnMessageAsync(message => ReceiveMessageAsync(message, null), options);
         }
 
         /// <summary>
-        /// This method causes the communication listener to close. Close is a terminal state and 
-        ///             this method allows the communication listener to transition to this state in a
-        ///             graceful manner.
+        /// Starts listening for session messages on the configured Service Bus subscription.
         /// </summary>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>
-        /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation.
-        /// </returns>
-        protected override async Task CloseImplAsync(CancellationToken cancellationToken)
+        protected override void ListenForSessionMessages()
         {
-            await _serviceBusClient.CloseAsync();
+            var options = new SessionHandlerOptions();
+            if (AutoRenewTimeout.HasValue)
+            {
+                options.AutoRenewTimeout = AutoRenewTimeout.Value;
+            }
+            if (MaxConcurrentSessions.HasValue)
+            {
+                options.MaxConcurrentSessions = MaxConcurrentSessions.Value;
+            }
+            ServiceBusClient.RegisterSessionHandlerFactory(new SessionHandlerFactory(this), options);
+        }
+
+
+        private class SessionHandlerFactory : IMessageSessionAsyncHandlerFactory
+        {
+            private readonly ServiceBusSubscriptionCommunicationListener _listener;
+
+            public SessionHandlerFactory(ServiceBusSubscriptionCommunicationListener listener)
+            {
+                _listener = listener;
+            }
+
+            public IMessageSessionAsyncHandler CreateInstance(MessageSession session, BrokeredMessage message)
+            {
+                return new SessionHandler(_listener);
+            }
+
+            public void DisposeInstance(IMessageSessionAsyncHandler handler)
+            {
+            }
+        }
+
+        private class SessionHandler : MessageSessionAsyncHandler
+        {
+            private readonly ServiceBusSubscriptionCommunicationListener _listener;
+
+            public SessionHandler(ServiceBusSubscriptionCommunicationListener listener)
+            {
+                _listener = listener;
+            }
+            protected override Task OnMessageAsync(MessageSession session, BrokeredMessage message)
+            {
+                return _listener.ReceiveMessageAsync(message, session);
+            }
         }
 
         /// <summary>
-        /// Starts listening for messages on the configured Service Bus Subscription.
+        /// Will pass an incoming message to the <see cref="Receiver"/> for processing.
         /// </summary>
-        private void ListenForMessages()
+        /// <param name="messageSession">Contains the MessageSession when sessions are enabled.</param>
+        /// <param name="message"></param>
+        protected async Task ReceiveMessageAsync(BrokeredMessage message, MessageSession messageSession)
         {
-            ThreadStart ts = async () =>
+            try
             {
-                while (!StopProcessingMessageToken.IsCancellationRequested)
+                ProcessingMessage.Reset();
+                await Receiver.ReceiveMessageAsync(message, messageSession, StopProcessingMessageToken);
+                if (Receiver.AutoComplete)
                 {
-                    var messages = _serviceBusClient.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
-                    if (messages.Length == 0) continue;
-                    await ProcessMessagesAsync(messages);
+                    await message.CompleteAsync();
                 }
-            };
-            StartBackgroundThread(ts);
-        }
-
-        /// <summary>
-		/// Starts listening for session messages on the configured Service Bus Subscription.
-		/// </summary>
-        private void ListenForSessionMessages()
-        {
-            ThreadStart ts = async () =>
+            }
+            finally
             {
-                while (!StopProcessingMessageToken.IsCancellationRequested)
-                {
-                    MessageSession session = null;
-                    try
-                    {
-                        session = _serviceBusClient.AcceptMessageSession(ServiceBusServerTimeout);
-
-                        do
-                        {
-                            var messages = session.ReceiveBatch(ServiceBusMessageBatchSize, ServiceBusServerTimeout).ToArray();
-                            if (messages.Length == 0) break;
-                            await ProcessMessagesAsync(messages);
-                        } while (!StopProcessingMessageToken.IsCancellationRequested);
-                    }
-                    catch (TimeoutException)
-                    {
-                    }
-                    finally
-                    {
-                        session?.Close();
-                    }
-                }
-            };
-            StartBackgroundThread(ts);
+                message.Dispose();
+                ProcessingMessage.Set();
+            }
         }
-
-        
-
     }
 }

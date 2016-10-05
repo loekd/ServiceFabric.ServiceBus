@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Fabric;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -20,12 +19,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         private readonly CancellationTokenSource _stopProcessingMessageTokenSource;
 
         //prevents aborts during the processing of a message
-        private readonly ManualResetEvent _processingMessage = new ManualResetEvent(true);
-
-        /// <summary>
-        /// Gets the processor of incoming messages
-        /// </summary>
-        protected IServiceBusMessageReceiver Receiver { get; }
+        protected ManualResetEvent ProcessingMessage { get; } = new ManualResetEvent(true);
 
         /// <summary>
         /// Gets the <see cref="ServiceContext"/> that was used to create this instance.
@@ -35,13 +29,23 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// <summary>
         /// Gets a Service Bus connection string that should have only receive-rights.
         /// </summary>
-        protected string ServiceBusReceiveConnectionString { get; }
+        [Obsolete("Replaced by ReceiveConnectionString")]
+        protected string ServiceBusReceiveConnectionString => ReceiveConnectionString;
+
+        /// <summary>
+        /// Gets a Service Bus connection string that should have only receive-rights.
+        /// </summary>
+        protected string ReceiveConnectionString { get; }
 
         /// <summary>
         /// Gets a Service Bus connection string that should have only send-rights.
         /// </summary>
-        protected string ServiceBusSendConnectionString { get; }
-
+        [Obsolete("Replaced by SendConnectionString")]
+        protected string ServiceBusSendConnectionString => SendConnectionString;
+        /// <summary>
+        /// Gets a Service Bus connection string that should have only send-rights.
+        /// </summary>
+        protected string SendConnectionString { get; }
 
         /// <summary>
         /// When <see cref="CancellationToken.IsCancellationRequested"/> is true, this indicates that either <see cref="CloseAsync"/> 
@@ -55,32 +59,52 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         protected bool RequireSessions { get; private set; }
 
         /// <summary>
-        /// Gets or sets the batch size when receiving Service Bus Messages. (Defaults to 10)
+        /// Gets or sets the prefetch size when receiving Service Bus Messages. (Defaults to 0, which indicates no prefetch)
+        /// Set to 20 times the total number of messages that a single receiver can process per second.
         /// </summary>
-        public int ServiceBusMessageBatchSize { get; set; } = 10;
+        [Obsolete("Replaced by MessagePrefetchCount")]
+        public int ServiceBusMessagePrefetchCount
+        {
+            get { return MessagePrefetchCount; }
+            set { MessagePrefetchCount = value; }
+        }
 
         /// <summary>
         /// Gets or sets the prefetch size when receiving Service Bus Messages. (Defaults to 0, which indicates no prefetch)
         /// Set to 20 times the total number of messages that a single receiver can process per second.
         /// </summary>
-        public int ServiceBusMessagePrefetchCount { get; set; } = 0;
+        public int MessagePrefetchCount { get; set; }
 
         /// <summary>
         /// Gets or sets the timeout for receiving a batch of Service Bus Messages. (Defaults to 30s)
         /// </summary>
-        public TimeSpan ServiceBusServerTimeout { get; set; } = TimeSpan.FromSeconds(30);
+        [Obsolete("Replaced by ServerTimeout")]
+        public TimeSpan ServiceBusServerTimeout
+        {
+            get { return ServerTimeout; }
+            set { ServerTimeout = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the timeout for receiving a batch of Service Bus Messages. (Defaults to 30s)
+        /// </summary>
+        public TimeSpan ServerTimeout { get; set; } = TimeSpan.FromSeconds(30);
+        
 
         /// <summary>
         /// Gets or sets the Service Bus client ReceiveMode. 
         /// </summary>
-        public ReceiveMode ServiceBusReceiveMode { get; set; } = ReceiveMode.PeekLock;
+        [Obsolete("Replaced by ReceiveMode")]
+        public ReceiveMode ServiceBusReceiveMode
+        {
+            get { return ReceiveMode; }
+            set { ReceiveMode = value; }
+        }
 
         /// <summary>
-        /// Gets or set the interval at which message locks are renewed, while a batch is being processed. 
-        /// Set to the configured message lock duration (e.g. QueueDescription.LockDuration), minus a clock skew. (50 seconds works well when lockduration is 60s.) 
-        /// Set to null if no locks need to be renewed. (Defaults to null.)
+        /// Gets or sets the Service Bus client ReceiveMode. 
         /// </summary>
-        public TimeSpan? MessageLockRenewTimeSpan { get; set; }
+        public ReceiveMode ReceiveMode { get; set; } = ReceiveMode.PeekLock;
 
         /// <summary>
         /// Gets or sets a callback for writing logs. (Defaults to null)
@@ -90,7 +114,6 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// <summary>
         /// Creates a new instance.
         /// </summary>
-        /// <param name="receiver">(Required) Processes incoming messages.</param>
         /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
         /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
         /// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
@@ -99,14 +122,12 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         ///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
         ///  is used.</param>
 	    /// <param name="requireSessions">Indicates whether the provided Message Queue requires sessions.</param>
-        protected ServiceBusCommunicationListener(IServiceBusMessageReceiver receiver
-            , ServiceContext context
+        protected ServiceBusCommunicationListener(ServiceContext context
             , string serviceBusSendConnectionString
             , string serviceBusReceiveConnectionString
             , bool requireSessions)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
-            if (receiver == null) throw new ArgumentNullException(nameof(receiver));
 
             if (string.IsNullOrWhiteSpace(serviceBusSendConnectionString))
                 serviceBusSendConnectionString = CloudConfigurationManager.GetSetting(DefaultSendConnectionStringConfigurationKey);
@@ -118,9 +139,8 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
 
             RequireSessions = requireSessions;
             Context = context;
-            Receiver = receiver;
-            ServiceBusSendConnectionString = serviceBusSendConnectionString;
-            ServiceBusReceiveConnectionString = serviceBusReceiveConnectionString;
+            SendConnectionString = serviceBusSendConnectionString;
+            ReceiveConnectionString = serviceBusReceiveConnectionString;
 
             _stopProcessingMessageTokenSource = new CancellationTokenSource();
             StopProcessingMessageToken = _stopProcessingMessageTokenSource.Token;
@@ -151,8 +171,8 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             WriteLog("Service Bus Communication Listnener closing");
             _stopProcessingMessageTokenSource.Cancel();
             //Wait for Message processing to complete..
-            _processingMessage.WaitOne();
-            _processingMessage.Dispose();
+            ProcessingMessage.WaitOne();
+            ProcessingMessage.Dispose();
             return CloseImplAsync(cancellationToken);
         }
 
@@ -164,7 +184,6 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         public virtual void Abort()
         {
             WriteLog("Service Bus Communication Listnener aborting");
-
             Dispose();
         }
 
@@ -182,67 +201,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             return Task.FromResult(true);
         }
 
-        /// <summary>
-        /// Executes the provided <paramref name="action"/> on a background thread.
-        /// </summary>
-        /// <param name="action"></param>
-        protected void StartBackgroundThread(ThreadStart action)
-        {
-            Thread listener = new Thread(action)
-            {
-                IsBackground = true
-            };
-            listener.Start();
-        }
-
-        /// <summary>
-        /// Will pass an incoming message to the <see cref="Receiver"/> for processing.
-        /// </summary>
-        /// <param name="message"></param>
-        protected async Task ReceiveMessageAsync(BrokeredMessage message)
-        {
-            try
-            {
-                _processingMessage.Reset();
-                await Receiver.ReceiveMessageAsync(message, StopProcessingMessageToken);
-            }
-            finally
-            {
-                message.Dispose();
-                _processingMessage.Set();
-            }
-        }
-
-        /// <summary>
-        /// Returns a set of timers that will be used to renew message locks, if <see cref="MessageLockRenewTimeSpan"/> has a value.
-        /// </summary>
-        /// <param name="messages"></param>
-        /// <returns></returns>
-        protected MessageLockRenewTimerSet CreateRenewTimer(ICollection<BrokeredMessage> messages)
-        {
-            var timers = MessageLockRenewTimeSpan.HasValue ? new MessageLockRenewTimerSet(messages, MessageLockRenewTimeSpan.Value, LogAction) : new MessageLockRenewTimerSet();
-            return timers;
-        }
-
-        /// <summary>
-        /// Processes the provided set of <see cref="BrokeredMessage"/>s, with optional automatic lock renewal.
-        /// </summary>
-        /// <param name="messages"></param>
-        /// <returns></returns>
-        protected async Task ProcessMessagesAsync(ICollection<BrokeredMessage> messages)
-        {
-            WriteLog($"Service Bus Communication Listnener processing {messages.Count} messages.");
-
-            var timers = CreateRenewTimer(messages);
-            foreach (var message in messages)
-            {
-                if (StopProcessingMessageToken.IsCancellationRequested) break;
-                using (timers[message])
-                {
-                    await ReceiveMessageAsync(message);
-                }
-            }
-        }
+       
 
         /// <summary>
         /// Writes a log entry if <see cref="LogAction"/> is not null.
@@ -259,6 +218,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// </summary>
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             Dispose(true);
         }
 
@@ -268,8 +228,8 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing) return;
-            _processingMessage.Set();
-            _processingMessage.Dispose();
+            ProcessingMessage.Set();
+            ProcessingMessage.Dispose();
             _stopProcessingMessageTokenSource.Cancel();
             _stopProcessingMessageTokenSource.Dispose();
         }

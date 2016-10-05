@@ -12,6 +12,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         private readonly BrokeredMessage _message;
         private readonly Action<string> _logAction;
         private readonly Timer _timer;
+        private readonly string _messageId;
 
         /// <summary>
         /// Gets the interval at which message locks are renewed.
@@ -26,6 +27,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             if (message == null) throw new ArgumentNullException(nameof(message));
             _message = message;
             _logAction = logAction;
+            _messageId = message.MessageId;
             MessageLockRenewTimeSpan = messageLockRenewTimeSpan;
             //renew after lock duration expires, and repeat
             _timer = new Timer(Tick, 1, MessageLockRenewTimeSpan, MessageLockRenewTimeSpan);
@@ -47,7 +49,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
                     throw new Exception("Retry maximum exceeded.");
                 }
                 _message.RenewLock();
-                WriteLog($"Renewed lock for BrokeredMessage {_message.MessageId}.");
+                WriteLog($"Renewed lock for BrokeredMessage {_messageId}.");
             }
             catch (MessagingCommunicationException)
             {
@@ -62,7 +64,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
                 }
                 else
                 {
-                    WriteLog($"Failed to renew lock for BrokeredMessage {_message.MessageId}. Error:'{ex.Message}'");
+                    WriteLog($"Failed to renew lock for BrokeredMessage {_messageId}. Error:'{ex.Message}'");
                     Dispose();
                 }
             }
@@ -72,7 +74,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             }
             catch (Exception ex)
             {
-                WriteLog($"Failed to renew lock for BrokeredMessage {_message.MessageId}. Error:'{ex.Message}'");
+                WriteLog($"Failed to renew lock for BrokeredMessage {_messageId}. Error:'{ex.Message}'");
                 Dispose();
             }
         }

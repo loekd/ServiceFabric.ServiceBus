@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,18 +9,18 @@ using Microsoft.ServiceBus.Messaging;
 namespace ServiceFabric.ServiceBus.Services
 {
     /// <summary>
-    /// Implementation of <see cref="IServiceBusMessageReceiver"/> that will automatically call <see cref="BrokeredMessage.Complete()"/>
+    /// Implementation of <see cref="IServiceBusMessageBatchReceiver"/> that will automatically call Batch Complete"/>
     /// on the received message after successfull processing.
     /// Upon failure, it will call <see cref="BrokeredMessage.Abandon()"/> and suppress the error.
     /// Also has cancellation support.
     /// </summary>
-    public abstract class AutoCompleteServiceBusMessageReceiver : IServiceBusMessageReceiver
+    public abstract class AutoCompleteBatchServiceBusMessageReceiver : IServiceBusMessageBatchReceiver
     {
         /// <summary>
         /// Gets or sets a callback for writing logs. (Defaults to null)
         /// </summary>
         public Action<string> LogAction { get; }
-
+        
         /// <inheritdoc />
         public bool AutoComplete => true;
 
@@ -26,7 +28,7 @@ namespace ServiceFabric.ServiceBus.Services
         /// Creates a new instance using the provided log callback.
         /// </summary>
         /// <param name="logAction"></param>
-        protected AutoCompleteServiceBusMessageReceiver(Action<string> logAction = null)
+        protected AutoCompleteBatchServiceBusMessageReceiver(Action<string> logAction = null)
         {
             LogAction = logAction;
         }
@@ -34,31 +36,36 @@ namespace ServiceFabric.ServiceBus.Services
         /// <summary>
         /// Processes a message. Must perform error handling and also message completion or abandoning.
         /// </summary>
-	    /// <param name="messageSession">Contains the MessageSession when sessions are enabled.</param>
-        /// <param name="message">The incoming Service Bus Message to process</param>
+        /// <param name="messageSession">Contains the MessageSession when sessions are enabled.</param>
+        /// <param name="messages">The incoming Service Bus Message batch to process</param>
         /// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
-        public async Task ReceiveMessageAsync(BrokeredMessage message, MessageSession messageSession, CancellationToken cancellationToken)
+        public async Task ReceiveMessagesAsync(IEnumerable<BrokeredMessage> messages, MessageSession messageSession, CancellationToken cancellationToken)
         {
+            var localMessages = messages.ToArray();
             try
             {
-                await ReceiveMessageImplAsync(message, messageSession, cancellationToken);
+                await ReceiveMessagesImplAsync(localMessages, messageSession, cancellationToken);
             }
             catch (Exception ex)
             {
-                if (!HandleReceiveMessageError(message, ex))
+                if (!HandleReceiveMessagesError(localMessages, ex))
                     throw;
             }
         }
 
         /// <summary>
-        /// Called when an error is thrown from <see cref="ReceiveMessageAsync"/>. Return true if the error is handled. Return false to terminate the process.
+        /// Called when an error is thrown from <see cref="ReceiveMessagesAsync"/>. Return true if the error is handled. Return false to terminate the process.
+        /// Abandons all messages in the batch. Returns true.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="messages"></param>
         /// <param name="ex"></param>
-        protected virtual bool HandleReceiveMessageError(BrokeredMessage message, Exception ex)
+        protected virtual bool HandleReceiveMessagesError(IEnumerable<BrokeredMessage> messages, Exception ex)
         {
-            WriteLog($"Abandoning message {message.MessageId}. Error:'{ex}'.");
-            message.Abandon();
+            foreach (var message in messages)
+            {
+                WriteLog($"Abandoning message {message.MessageId}. Error:'{ex}'.");
+                message.Abandon();
+            }
             //catch all to avoid process crash.
             //assuming overriding code handles exceptions.
             return true;
@@ -67,10 +74,10 @@ namespace ServiceFabric.ServiceBus.Services
         /// <summary>
         /// (When overridden) Processes a message.  Must perform error handling.
         /// </summary>
-        /// <param name="message">The incoming Service Bus Message to process</param>
+        /// <param name="messages">The incoming Service Bus Message batch to process</param>
         /// <param name="messageSession">Contains the MessageSession when sessions are enabled.</param>
         /// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
-        protected abstract Task ReceiveMessageImplAsync(BrokeredMessage message, MessageSession messageSession, CancellationToken cancellationToken);
+        protected abstract Task ReceiveMessagesImplAsync(IEnumerable<BrokeredMessage> messages, MessageSession messageSession, CancellationToken cancellationToken);
 
         /// <summary>
         /// Writes a log entry if <see cref="LogAction"/> is not null.
