@@ -21,6 +21,7 @@ v4.0.0
 - Message handlers now provide the MessageSession if available.
 - Some properties are now obsolete to make naming more consistent.
 - Single messages are now received using the message pump.
+- Support entity path in connection strings, or explicit entitypath argument
 
 v3.6.0
 - Updated to new SDK, no other changes
@@ -84,6 +85,9 @@ Make sure your projects are configured to build as 64 bit programs!
 ----------------------------------------------
 
 ## To create a message handler:
+
+*You can also use the ```AutoCompleteServiceBusMessageReceiver``` and ```AutoCompleteBatchServiceBusMessageReceiver``` handlers supplied by the package.*
+
 ```javascript
 internal sealed class Handler : IServiceBusMessageReceiver
 {
@@ -93,8 +97,8 @@ internal sealed class Handler : IServiceBusMessageReceiver
 	{
 		_service = service;
 	}
-
-	public Task ReceiveMessageAsync(BrokeredMessage message, CancellationToken cancellationToken)
+	
+	public Task ReceiveMessageAsync(BrokeredMessage message, MessageSession session, CancellationToken cancellationToken)
         {
             ServiceEventSource.Current.ServiceMessage(_service, $"Handling subscription message {message.MessageId}");
             return Task.FromResult(true);
