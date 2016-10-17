@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/MyServiceFabricApp" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="SampleSubscriptionListeningStatelessService_InstanceCount" Value="-1" />
+    <Parameter Name="SampleSubscriptionListeningStatefulService_PartitionCount" Value="1" />
+    <Parameter Name="SampleSubscriptionListeningStatefulService_MinReplicaSetSize" Value="2" />
+    <Parameter Name="SampleSubscriptionListeningStatefulService_TargetReplicaSetSize" Value="3" />
+    <Parameter Name="SampleQueueListeningStatefulService_PartitionCount" Value="1" />
+    <Parameter Name="SampleQueueListeningStatefulService_MinReplicaSetSize" Value="2" />
+    <Parameter Name="SampleQueueListeningStatefulService_TargetReplicaSetSize" Value="3" />
+    <Parameter Name="SampleQueueListeningStatelessService_InstanceCount" Value="-1" />
+  </Parameters>
+</Application>

@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="MyServiceFabricAppType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="SampleSubscriptionListeningStatelessService_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="SampleSubscriptionListeningStatefulService_MinReplicaSetSize" DefaultValue="2" />
+    <Parameter Name="SampleSubscriptionListeningStatefulService_PartitionCount" DefaultValue="1" />
+    <Parameter Name="SampleSubscriptionListeningStatefulService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="SampleQueueListeningStatefulService_MinReplicaSetSize" DefaultValue="2" />
+    <Parameter Name="SampleQueueListeningStatefulService_PartitionCount" DefaultValue="1" />
+    <Parameter Name="SampleQueueListeningStatefulService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="SampleQueueListeningStatelessService_InstanceCount" DefaultValue="-1" />
+  </Parameters>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="SampleSubscriptionListeningStatelessServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="SampleSubscriptionListeningStatefulServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="SampleQueueListeningStatefulServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="SampleQueueListeningStatelessServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+  <DefaultServices>
+    <Service Name="SampleSubscriptionListeningStatelessService">
+      <StatelessService ServiceTypeName="SampleSubscriptionListeningStatelessServiceType" InstanceCount="[SampleSubscriptionListeningStatelessService_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="SampleSubscriptionListeningStatefulService">
+      <StatefulService ServiceTypeName="SampleSubscriptionListeningStatefulServiceType" TargetReplicaSetSize="[SampleSubscriptionListeningStatefulService_TargetReplicaSetSize]" MinReplicaSetSize="[SampleSubscriptionListeningStatefulService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[SampleSubscriptionListeningStatefulService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="SampleQueueListeningStatefulService">
+      <StatefulService ServiceTypeName="SampleQueueListeningStatefulServiceType" TargetReplicaSetSize="[SampleQueueListeningStatefulService_TargetReplicaSetSize]" MinReplicaSetSize="[SampleQueueListeningStatefulService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[SampleQueueListeningStatefulService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="SampleQueueListeningStatelessService">
+      <StatelessService ServiceTypeName="SampleQueueListeningStatelessServiceType" InstanceCount="[SampleQueueListeningStatelessService_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+  </DefaultServices>
+</ApplicationManifest>
