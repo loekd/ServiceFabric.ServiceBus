@@ -61,8 +61,8 @@
       <HintPath>..\..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.2\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ServiceFabric.ServiceBus.Clients, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ServiceFabric.ServiceBus.Clients.4.0.0\lib\net46\ServiceFabric.ServiceBus.Clients.dll</HintPath>
+    <Reference Include="ServiceFabric.ServiceBus.Clients, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ServiceFabric.ServiceBus.Clients.4.1.0\lib\net46\ServiceFabric.ServiceBus.Clients.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ServiceFabricServiceModel, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
