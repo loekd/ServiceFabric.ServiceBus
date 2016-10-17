@@ -1,5 +1,5 @@
 {
-  "version": "4.1.0",
+  "version": "4.0.0",
   "packOptions": {
     "requireLicenseAcceptance": true,
     "summary": "Adds Reliable communication to and between ServiceFabric Reliable Services, using Service Bus. Supports Queues and Topics. This is the Service Package.",
@@ -26,8 +26,8 @@
     }
   },
   "dependencies": {
-    "Microsoft.ServiceFabric.Services": "2.3.301",
-    "Microsoft.WindowsAzure.ConfigurationManager": "3.2.2",
+    "Microsoft.ServiceFabric.Services": "2.2.207",
+    "Microsoft.WindowsAzure.ConfigurationManager": "3.2.1",
     "WindowsAzure.ServiceBus": "3.4.0"
   }
 }
