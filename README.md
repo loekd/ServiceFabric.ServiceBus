@@ -14,7 +14,7 @@ For creating a Communication Listener that receives messages from Azure Service 
 
 ## Release notes:
 
-v4.2.0
+v4.3.0
 - upgraded to new SDK and packages (2.3.311) 
 
 v4.1.0
