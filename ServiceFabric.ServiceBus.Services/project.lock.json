@@ -50,7 +50,7 @@
           "lib/net45/ServiceFabricServiceModel.dll": {}
         }
       },
-      "Microsoft.WindowsAzure.ConfigurationManager/3.2.2": {
+      "Microsoft.WindowsAzure.ConfigurationManager/3.2.3": {
         "type": "package",
         "compile": {
           "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
@@ -59,7 +59,7 @@
           "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
         }
       },
-      "WindowsAzure.ServiceBus/3.4.0": {
+      "WindowsAzure.ServiceBus/3.4.2": {
         "type": "package",
         "frameworkAssemblies": [
           "System.Runtime.Serialization",
@@ -122,7 +122,7 @@
           "lib/net45/ServiceFabricServiceModel.dll": {}
         }
       },
-      "Microsoft.WindowsAzure.ConfigurationManager/3.2.2": {
+      "Microsoft.WindowsAzure.ConfigurationManager/3.2.3": {
         "type": "package",
         "compile": {
           "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
@@ -131,7 +131,7 @@
           "lib/net40/Microsoft.WindowsAzure.Configuration.dll": {}
         }
       },
-      "WindowsAzure.ServiceBus/3.4.0": {
+      "WindowsAzure.ServiceBus/3.4.2": {
         "type": "package",
         "frameworkAssemblies": [
           "System.Runtime.Serialization",
@@ -187,23 +187,23 @@
         "lib/net45/ServiceFabricServiceModel.dll"
       ]
     },
-    "Microsoft.WindowsAzure.ConfigurationManager/3.2.2": {
-      "sha512": "ef+gvh8iM2KGCqypDDpQ3d8Ikc+bLlz9fe+vvRJ6KJI8Mzk+2j1wM0qvx2l2KmT/mNkfhkicsEES+sokE89vBQ==",
+    "Microsoft.WindowsAzure.ConfigurationManager/3.2.3": {
+      "sha512": "pAFC2gHAuubgaw7hqSDuaEVMqip/Z0niCFVpUZ1Hg+HUw4BuMQDZnNXCm+S9SU2zPwaH8l8hXaxDXSQI438gMA==",
       "type": "package",
-      "path": "Microsoft.WindowsAzure.ConfigurationManager/3.2.2",
+      "path": "Microsoft.WindowsAzure.ConfigurationManager/3.2.3",
       "files": [
-        "Microsoft.WindowsAzure.ConfigurationManager.3.2.2.nupkg.sha512",
+        "Microsoft.WindowsAzure.ConfigurationManager.3.2.3.nupkg.sha512",
         "Microsoft.WindowsAzure.ConfigurationManager.nuspec",
         "lib/net40/Microsoft.WindowsAzure.Configuration.dll",
         "lib/net40/Microsoft.WindowsAzure.Configuration.xml"
       ]
     },
-    "WindowsAzure.ServiceBus/3.4.0": {
-      "sha512": "ZNNXKuiHk97qTgpVtEL12EcUhuGF8jDE+OJ7anB1f/rZEVWpThTpeJDSiM9JEzMRRqYC6w0RCLeXbNwfElsiHg==",
+    "WindowsAzure.ServiceBus/3.4.2": {
+      "sha512": "EOdUJ+LKg6REqqBkxUxXD2knQKEzmjXFGW7hqUsURMtbH5w8x36JIKEtIHpL/naLMmQsmrQAQq7wOtd9iI1pNA==",
       "type": "package",
-      "path": "WindowsAzure.ServiceBus/3.4.0",
+      "path": "WindowsAzure.ServiceBus/3.4.2",
       "files": [
-        "WindowsAzure.ServiceBus.3.4.0.nupkg.sha512",
+        "WindowsAzure.ServiceBus.3.4.2.nupkg.sha512",
         "WindowsAzure.ServiceBus.nuspec",
         "content/app.config.install.xdt",
         "content/web.config.install.xdt",
@@ -215,8 +215,8 @@
   "projectFileDependencyGroups": {
     "": [
       "Microsoft.ServiceFabric.Services >= 2.3.301",
-      "Microsoft.WindowsAzure.ConfigurationManager >= 3.2.2",
-      "WindowsAzure.ServiceBus >= 3.4.0"
+      "Microsoft.WindowsAzure.ConfigurationManager >= 3.2.3",
+      "WindowsAzure.ServiceBus >= 3.4.2"
     ],
     ".NETFramework,Version=v4.5.1": [],
     ".NETFramework,Version=v4.6": []

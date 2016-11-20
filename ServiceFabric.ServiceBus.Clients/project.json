@@ -1,5 +1,5 @@
 {
-  "version": "4.1.0",
+  "version": "4.3.0",
   "packOptions": {
     "title": "ServiceFabric.ServiceBus.Clients",
     "requireLicenseAcceptance": true,
