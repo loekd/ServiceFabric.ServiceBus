@@ -3,7 +3,7 @@
   "packOptions": {
     "title": "ServiceFabric.ServiceBus.Clients",
     "requireLicenseAcceptance": true,
-    "summary": "Adds Reliable communication to and between ServiceFabric Reliable Services, using Service Bus. Supports Queues and Topics. This is the Client Package.",
+    "summary": "Adds Reliable communication to and between ServiceFabric Reliable Services, using Service Bus. Supports Queues and Topics. This is the Client Package for sending BrokeredMessages.",
     "tags": [ "ServiceFabric", "Service", "Fabric", "ServiceBus", "Bus", "Reliable" ],
     "projectUrl": "https://github.com/loekd/ServiceFabric.ServiceBus",
     "licenseUrl": "https://github.com/loekd/ServiceFabric.ServiceBus/blob/master/LICENSE",
