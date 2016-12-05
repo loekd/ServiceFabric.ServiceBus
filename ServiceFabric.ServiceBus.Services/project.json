@@ -14,7 +14,7 @@
       "include": "content/**"
     }
   },
-  "description": "Communicate to ServiceFabric Services through Service Bus. Add this package to your Reliable Service project. The ServiceFabric.ServiceBus.Services Class Library should be used in conjunction with ServiceFabric.ServiceBus.Client",
+  "description": "Receive BrokeredMessages in ServiceFabric Services through Service Bus. Add this package to your Reliable Service project. The ServiceFabric.ServiceBus.Services Class Library should be used in conjunction with ServiceFabric.ServiceBus.Client",
   "authors": [ "Loek Duys" ],
   "buildOptions": {
     "platform": "x64"
