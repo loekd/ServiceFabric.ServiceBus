@@ -1,5 +1,5 @@
 {
-  "version": "4.3.1",
+  "version": "4.4.0",
   "packOptions": {
     "requireLicenseAcceptance": true,
     "summary": "Adds Reliable communication to and between ServiceFabric Reliable Services, using Service Bus. Supports Queues and Topics. This is the Service Package for receiving BrokeredMessages.",
@@ -26,8 +26,8 @@
     }
   },
   "dependencies": {
-    "Microsoft.ServiceFabric.Services": "2.3.311",
+    "Microsoft.ServiceFabric.Services": "2.4.145",
     "Microsoft.WindowsAzure.ConfigurationManager": "3.2.3",
-    "WindowsAzure.ServiceBus": "3.4.2"
+    "WindowsAzure.ServiceBus": "3.4.3"
   }
 }
