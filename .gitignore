@@ -35,7 +35,4 @@
 /ServiceFabric.ServiceBus.Services/bin
 /ServiceFabric.ServiceBus.Services/obj/'Debug'
 *.user
-/ServiceFabric.ServiceBus.Demo/MyServiceFabricApp/Backup3/Backup
-/ServiceFabric.ServiceBus.Demo/MyServiceFabricApp/Backup3/Backup1
-/ServiceFabric.ServiceBus.Demo/MyServiceFabricApp/Backup3/obj/x64/Debug
-/ServiceFabric.ServiceBus.Demo/MyServiceFabricApp/Backup3
+/ServiceFabric.ServiceBus.Demo/MyServiceFabricApp/Backup*
