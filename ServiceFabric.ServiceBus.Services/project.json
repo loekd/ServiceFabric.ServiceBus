@@ -18,6 +18,7 @@
   "description": "Receive BrokeredMessages in ServiceFabric Services through Service Bus. Add this package to your Reliable Service projects. The ServiceFabric.ServiceBus.Services Class Library can be used in conjunction with ServiceFabric.ServiceBus.Clients (optional)",
   "authors": [ "Loek Duys" ],
   "buildOptions": {
+    "keyFile": "../Key.snk",
     "platform": "x64"
   },
   "frameworks": {
