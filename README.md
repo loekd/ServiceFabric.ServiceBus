@@ -2,17 +2,36 @@
 Need some help to get started? Have a look at: 'https://github.com/loekd/ServiceFabric.ServiceBus/tree/master/ServiceFabric.ServiceBus.Demo'
 
 ## Nuget Packages:
-ServiceFabric.ServiceBus.Clients
+Two packages, one for Receiving Brokered Messsages, and one (optional) for Sending them.
+
+### ServiceFabric.ServiceBus.Services
+https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services
+Contains implementations of `ICommunicationListener` that receive messages from Azure Service Bus (Queue/Subscription).
+
+#### Receive from Queues:
+
+- ServiceBusQueueBatchCommunicationListener
+- ServiceBusQueueCommunicationListener
+
+#### Receive from Subscriptions:
+
+- ServiceBusSubscriptionBatchCommunicationListener
+- ServiceBusSubscriptionCommunicationListener
+
+
+### ServiceFabric.ServiceBus.Clients
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients
 Receive BrokeredMessages in Service Fabric Reliable Services using the Communication Listener from the package 'ServiceFabric.ServiceBus.Services'.
 Provides a ServiceBusTopicCommunicationClient to be used with 'ServicePartitionClient'.
 *If you post messages to Service Bus in a different way, you won't need the client package.*
 
-ServiceFabric.ServiceBus.Services
-https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services
-For creating a Communication Listener that receives messages from Azure Service Bus (Queue/Subscription).
+
 
 ## Release notes:
+
+v4.5.1
+- upgraded ASB Nuget package
+- fixed throwing of an ArgumentNullException when not passsing optional ServiceContext. 
 
 v4.5.0
 - upgraded to new SDK and packages (2.4.164) 

@@ -22,7 +22,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         protected ManualResetEvent ProcessingMessage { get; } = new ManualResetEvent(true);
 
         /// <summary>
-        /// Gets the <see cref="ServiceContext"/> that was used to create this instance.
+        /// Gets the <see cref="ServiceContext"/> that was used to create this instance. Can be null.
         /// </summary>
         protected ServiceContext Context { get; }
 
@@ -127,8 +127,6 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             , string serviceBusReceiveConnectionString
             , bool requireSessions)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
-
             if (string.IsNullOrWhiteSpace(serviceBusSendConnectionString))
                 serviceBusSendConnectionString = CloudConfigurationManager.GetSetting(DefaultSendConnectionStringConfigurationKey);
             if (string.IsNullOrWhiteSpace(serviceBusReceiveConnectionString))
