@@ -29,6 +29,9 @@ Provides a ServiceBusTopicCommunicationClient to be used with 'ServicePartitionC
 
 ## Release notes:
 
+v4.6.0
+- Upgraded nuget packages (SF 2.5.216)
+
 v4.5.1
 - upgraded ASB Nuget package
 - fixed throwing of an ArgumentNullException when not passsing optional ServiceContext. 

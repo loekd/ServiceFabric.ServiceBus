@@ -1,5 +1,5 @@
 {
-  "version": "4.5.1",
+  "version": "4.6.0",
   "copyright": "2017",
   "packOptions": {
     "requireLicenseAcceptance": true,
@@ -27,8 +27,8 @@
     }
   },
   "dependencies": {
-    "Microsoft.ServiceFabric.Services": "2.4.164",
+    "Microsoft.ServiceFabric.Services": "2.5.216",
     "Microsoft.WindowsAzure.ConfigurationManager": "3.2.3",
-    "WindowsAzure.ServiceBus": "3.4.6"
+    "WindowsAzure.ServiceBus": "4.0.0"
   }
 }
