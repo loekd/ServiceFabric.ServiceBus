@@ -19,6 +19,7 @@
   "description": "Send BrokeredMessages to ServiceFabric Services through Service Bus. Optionally add this package to a project that will communicate to Reliable Services. Use in conjunction with ServiceFabric.ServiceBus.Services",
   "authors": [ "Loek Duys" ],
   "buildOptions": {
+    "keyFile": "../Key.snk",
     "platform": "x64"
   },
   "frameworks": {
