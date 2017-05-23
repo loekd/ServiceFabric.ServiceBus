@@ -36,3 +36,14 @@
 /ServiceFabric.ServiceBus.Services/obj/'Debug'
 *.user
 /ServiceFabric.ServiceBus.Demo/MyServiceFabricApp/Backup*
+/Backup
+/Backup1
+/ServiceFabric.ServiceBus.Clients/bin/Debug
+/ServiceFabric.ServiceBus.Clients/obj
+/ServiceFabric.ServiceBus.Services/obj
+/ServiceFabricServicesBackup/ServiceFabric.ServiceBus.Demo/SampleQueueListeningStatefulService/obj/x64
+/ServiceFabricServicesBackup/ServiceFabric.ServiceBus.Demo/SampleQueueListeningStatelessService/obj/x64
+/ServiceFabricServicesBackup/ServiceFabric.ServiceBus.Demo/SampleSubscriptionListeningStatefulService/obj/x64
+/ServiceFabricServicesBackup/ServiceFabric.ServiceBus.Demo/SampleSubscriptionListeningStatelessService/obj/x64
+/UpgradeLog.htm
+/UpgradeLog2.htm
