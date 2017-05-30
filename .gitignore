@@ -36,3 +36,10 @@
 /ServiceFabric.ServiceBus.Services/obj/'Debug'
 *.user
 /ServiceFabric.ServiceBus.Demo/MyServiceFabricApp/Backup*
+/UpgradeLog.htm
+/Backup
+/ServiceFabric.ServiceBus.Services/obj
+/Backup1
+/ServiceFabric.ServiceBus.Clients/obj
+*.htm
+/ServiceFabric.ServiceBus.Clients/bin/Debug
