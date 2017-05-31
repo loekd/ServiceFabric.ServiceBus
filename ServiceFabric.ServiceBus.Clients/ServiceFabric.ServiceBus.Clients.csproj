@@ -30,9 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="2.6.204" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="2.6.210" />
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.1.0" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.1.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">

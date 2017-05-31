@@ -30,7 +30,7 @@ Provides a ServiceBusTopicCommunicationClient to be used with 'ServicePartitionC
 ## Release notes:
 
 v5.0.0
- - Upgraded nuget packages (SF 2.6.204)
+ - Upgraded nuget packages (SF 2.6.210)
  - Upgraded sln to VS2017
 
 v4.6.0
