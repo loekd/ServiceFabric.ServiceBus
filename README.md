@@ -25,7 +25,11 @@ Receive BrokeredMessages in Service Fabric Reliable Services using the Communica
 Provides a ServiceBusTopicCommunicationClient to be used with 'ServicePartitionClient'.
 *If you post messages to Service Bus in a different way, you won't need the client package.*
 
-
+## Contribute!
+Contributions are welcome.
+Please upgrade the package version with a minor tick if there are no breaking changes. And add a line to the readme.md, stating the changes, e.g. 'upgraded to SF version x.y.z'.
+Doing so will allow me to simply accept the PR, which will automatically trigger the release of a new package.
+Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
