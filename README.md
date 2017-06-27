@@ -29,6 +29,9 @@ Provides a ServiceBusTopicCommunicationClient to be used with 'ServicePartitionC
 
 ## Release notes:
 
+v5.1.0
+ - Upgraded nuget packages (SF 2.6.220)
+
 v5.0.0
  - Upgraded nuget packages (SF 2.6.210)
  - Upgraded sln to VS2017
