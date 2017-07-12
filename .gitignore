@@ -48,3 +48,4 @@
 /UpgradeLog.htm
 /UpgradeLog2.htm
 /ServiceFabric.ServiceBus.Clients/bin/x64/Debug
+/ServiceFabric.ServiceBus.Demo/TestClient/obj/x64
