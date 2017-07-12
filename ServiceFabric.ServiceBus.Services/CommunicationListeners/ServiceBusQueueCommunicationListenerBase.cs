@@ -47,7 +47,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         {
             var builder = new ServiceBusConnectionStringBuilder(ReceiveConnectionString);
             if ((!string.IsNullOrWhiteSpace(serviceBusQueueName) && !string.IsNullOrWhiteSpace(builder.EntityPath)) || string.IsNullOrWhiteSpace(serviceBusQueueName) && string.IsNullOrWhiteSpace(builder.EntityPath))
-                throw new ArgumentException(nameof(serviceBusQueueName), $"Please provide either {nameof(serviceBusQueueName)} or a connection string with an entitypath.");
+                throw new ArgumentException(nameof(serviceBusQueueName), $"Please provide either {nameof(serviceBusQueueName)} or a receive connection string with an entitypath.");
 
             QueueName = serviceBusQueueName;
         }

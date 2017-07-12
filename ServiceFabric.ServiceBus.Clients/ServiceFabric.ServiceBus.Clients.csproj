@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Send BrokeredMessages to ServiceFabric Services through Service Bus. Optionally add this package to a project that will communicate to Reliable Services. Use in conjunction with ServiceFabric.ServiceBus.Services</Description>
     <Copyright>2017</Copyright>
-    <VersionPrefix>5.1.0</VersionPrefix>
+    <VersionPrefix>5.1.1</VersionPrefix>
     <Authors>Loek Duys</Authors>
     <TargetFrameworks>net451;net46</TargetFrameworks>
     <PlatformTarget>x64</PlatformTarget>

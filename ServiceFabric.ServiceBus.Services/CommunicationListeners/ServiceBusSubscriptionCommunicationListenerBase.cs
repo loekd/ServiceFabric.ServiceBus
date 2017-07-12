@@ -64,7 +64,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             string entityPath = builder.EntityPath;
            
             if ((!string.IsNullOrWhiteSpace(serviceBusTopicName) && !string.IsNullOrWhiteSpace(entityPath)) || string.IsNullOrWhiteSpace(serviceBusTopicName) && string.IsNullOrWhiteSpace(entityPath))
-                throw new ArgumentException(nameof(serviceBusTopicName), $"Please provide either {nameof(serviceBusTopicName)} or a connection string with an entitypath.");
+                throw new ArgumentException(nameof(serviceBusTopicName), $"Please provide either {nameof(serviceBusTopicName)} or a receive connection string with an entitypath.");
             
             TopicName = serviceBusTopicName ?? entityPath;
             SubscriptionName = serviceBusSubscriptionName;

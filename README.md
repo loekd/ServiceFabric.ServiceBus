@@ -33,6 +33,9 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
+v5.1.1
+ - Fixed optional string not being optional issue reported by jfloodnet.
+
 v5.1.0
  - Upgraded nuget packages (SF 2.6.220)
 

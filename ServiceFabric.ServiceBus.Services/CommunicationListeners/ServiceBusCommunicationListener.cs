@@ -116,7 +116,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
         /// </summary>
         /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
         /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
-        /// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
+        /// (Returned as Service Endpoint.) When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Send'
         ///  is used.</param>
         /// <param name="serviceBusReceiveConnectionString">(Optional) A Service Bus connection string that can be used for Receiving messages. 
         ///  When not supplied, an App.config appSettings value with key 'Microsoft.ServiceBus.ConnectionString.Receive'
@@ -132,7 +132,7 @@ namespace ServiceFabric.ServiceBus.Services.CommunicationListeners
             if (string.IsNullOrWhiteSpace(serviceBusReceiveConnectionString))
                 serviceBusReceiveConnectionString = CloudConfigurationManager.GetSetting(DefaultReceiveConnectionStringConfigurationKey);
 
-            if (string.IsNullOrWhiteSpace(serviceBusSendConnectionString)) throw new ArgumentOutOfRangeException(nameof(serviceBusSendConnectionString));
+            if (string.IsNullOrWhiteSpace(serviceBusSendConnectionString)) serviceBusSendConnectionString = "not:/available";
             if (string.IsNullOrWhiteSpace(serviceBusReceiveConnectionString)) throw new ArgumentOutOfRangeException(nameof(serviceBusReceiveConnectionString));
 
             RequireSessions = requireSessions;
