@@ -33,6 +33,8 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
+v5.1.5
+ - Upgraded nuget packages (SF 2.8.232)
 
 v5.1.4
  - Upgraded nuget packages (SF 2.8.219)
