@@ -18,6 +18,7 @@ Contains implementations of `ICommunicationListener` that receive messages from 
 - ServiceBusSubscriptionBatchCommunicationListener
 - ServiceBusSubscriptionCommunicationListener
 
+Note: Session support is available too.
 
 ### ServiceFabric.ServiceBus.Clients
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients
