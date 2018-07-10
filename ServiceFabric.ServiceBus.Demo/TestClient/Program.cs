@@ -285,7 +285,7 @@ namespace TestClient
             //the name of your application and the name of the Service, the default partition resolver and the topic name
             //to create a communication client factory:
             var resolver = ServicePartitionResolver.GetDefault();
-            var factory = new ServiceBusTopicCommunicationClientFactory(resolver, null);
+            var factory = new ServiceBusTopicCommunicationClientFactory(resolver, topicName);
 
             ServicePartitionClient<ServiceBusTopicCommunicationClient> servicePartitionClient;
 
@@ -310,7 +310,7 @@ namespace TestClient
         {
             //the name of your application and the name of the Service, the default partition resolver and the topic name
             //to create a communication client factory:
-            var factory = new ServiceBusQueueCommunicationClientFactory(ServicePartitionResolver.GetDefault(), null);
+            var factory = new ServiceBusQueueCommunicationClientFactory(ServicePartitionResolver.GetDefault(), queueName);
 
             ServicePartitionClient<ServiceBusQueueCommunicationClient> servicePartitionClient;
 

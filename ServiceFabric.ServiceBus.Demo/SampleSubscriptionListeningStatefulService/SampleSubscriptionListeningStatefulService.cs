@@ -33,7 +33,7 @@ namespace SampleSubscriptionListeningStatefulService
 			// and "Microsoft.ServiceBus.ConnectionString.Send"
 
 			// Also, define Topic & Subscription Names:
-		    string serviceBusTopicName = null; //CloudConfigurationManager.GetSetting("TopicName");
+		    string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
 			string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
 
 			yield return new ServiceReplicaListener(context => new ServiceBusSubscriptionBatchCommunicationListener(

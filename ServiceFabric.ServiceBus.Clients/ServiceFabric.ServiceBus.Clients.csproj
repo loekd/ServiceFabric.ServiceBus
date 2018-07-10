@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <Description>Send BrokeredMessages to ServiceFabric Services through Service Bus. Optionally add this package to a project that will communicate to Reliable Services. Use in conjunction with ServiceFabric.ServiceBus.Services</Description>
-    <Copyright>2017</Copyright>
-    <VersionPrefix>5.1.6</VersionPrefix>
+    <Copyright>2018</Copyright>
+    <VersionPrefix>5.1.7</VersionPrefix>
     <Authors>Loek Duys</Authors>
     <TargetFrameworks>net452;net46</TargetFrameworks>
     <PlatformTarget>x64</PlatformTarget>
@@ -24,7 +24,7 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,17 +34,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.0.456" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.1.301" />
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.1.7" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.1.11" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>

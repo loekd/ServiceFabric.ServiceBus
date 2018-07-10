@@ -29,7 +29,7 @@ namespace SampleSubscriptionListeningStatelessService
 			// and "Microsoft.ServiceBus.ConnectionString.Send"
 
 			// Also, define Topic & Subscription Names:
-		    string serviceBusTopicName = null; //CloudConfigurationManager.GetSetting("TopicName");
+		    string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
 			string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
             Action<string> logAction = log => ServiceEventSource.Current.ServiceMessage(this, log);
 
