@@ -34,6 +34,9 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
+v5.1.8
+ - add strong name to assemblies
+
 v5.1.7
  - Upgraded nuget packages (SF 3.1.301)
 

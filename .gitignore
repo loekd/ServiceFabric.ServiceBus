@@ -51,3 +51,6 @@
 /ServiceFabric.ServiceBus.Demo/TestClient/obj/x64
 
 **/App.config
+
+**/*.snk
+/ServiceFabric.ServiceBus.Clients/bin/x64/Release
