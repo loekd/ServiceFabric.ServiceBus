@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Receive BrokeredMessages in ServiceFabric Services through Service Bus. Add this package to your Reliable Service projects. The ServiceFabric.ServiceBus.Services Class Library can be used in conjunction with ServiceFabric.ServiceBus.Clients (optional)</Description>
     <Copyright>2018</Copyright>
-    <VersionPrefix>5.1.8</VersionPrefix>
+    <VersionPrefix>6.0.0</VersionPrefix>
     <Authors>Loek Duys</Authors>
     <TargetFrameworks>net452;net46</TargetFrameworks>
     <PlatformTarget>x64</PlatformTarget>
