@@ -54,3 +54,4 @@
 
 **/*.snk
 /ServiceFabric.ServiceBus.Clients/bin/x64/Release
+**/*.nupkg

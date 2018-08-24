@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Fabric;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -9,9 +10,38 @@ using Microsoft.ServiceFabric.Services.Communication.Runtime;
 namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 {
     /// <summary>
+    /// Communication listener that receives messages from Service Bus.
+    /// </summary>
+    public interface IServiceBusCommunicationListener : ICommunicationListener, IDisposable
+    {
+        /// <summary>
+        /// Completes the provided message. Removes it from the queue.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        Task Complete(Message message);
+
+        /// <summary>
+        /// Abandons the lock on the provided message. Puts it back on the queue.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="propertiesToModify"></param>
+        /// <returns></returns>
+        Task Abandon(Message message, IDictionary<string, object> propertiesToModify = null);
+
+        /// <summary>
+        /// Moves the provided message to the dead letter queue. Removes it from the queue.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="propertiesToModify"></param>
+        /// <returns></returns>
+        Task DeadLetter(Message message, IDictionary<string, object> propertiesToModify = null);
+    }
+
+    /// <summary>
     /// Abstract base implementation for <see cref="ICommunicationListener"/> connected to ServiceBus
     /// </summary>
-    public abstract class ServiceBusCommunicationListener : ICommunicationListener, IDisposable
+    public abstract class ServiceBusCommunicationListener : IServiceBusCommunicationListener
     {
         private readonly CancellationTokenSource _stopProcessingMessageTokenSource;
 
@@ -177,5 +207,14 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             _stopProcessingMessageTokenSource.Cancel();
             _stopProcessingMessageTokenSource.Dispose();
         }
+
+        /// <inheritdoc />
+        public abstract Task Complete(Message message);
+
+        /// <inheritdoc />
+        public abstract Task Abandon(Message message, IDictionary<string, object> propertiesToModify = null);
+
+        /// <inheritdoc />
+        public abstract Task DeadLetter(Message message, IDictionary<string, object> propertiesToModify = null);
     }
 }

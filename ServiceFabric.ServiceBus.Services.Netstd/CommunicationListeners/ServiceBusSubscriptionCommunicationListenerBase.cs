@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Fabric;
 using System.Threading;
 using System.Threading.Tasks;
@@ -107,5 +108,24 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// Starts listening for messages on the configured Service Bus Queue.
         /// </summary>
         protected abstract void ListenForMessages();
+
+
+        /// <inheritdoc />
+        public override Task Complete(Message message)
+        {
+            return ServiceBusClient.CompleteAsync(message.SystemProperties.LockToken);
+        }
+
+        /// <inheritdoc />
+        public override Task Abandon(Message message, IDictionary<string, object> propertiesToModify = null)
+        {
+            return ServiceBusClient.AbandonAsync(message.SystemProperties.LockToken, propertiesToModify);
+        }
+
+        /// <inheritdoc />
+        public override Task DeadLetter(Message message, IDictionary<string, object> propertiesToModify = null)
+        {
+            return ServiceBusClient.DeadLetterAsync(message.SystemProperties.LockToken, propertiesToModify);
+        }
     }
 }

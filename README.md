@@ -34,6 +34,10 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
+v6.0.0
+ - add netstandard 2.0 version. Not fully backwards compatible due to different Service Bus package.
+   Supports Queues and Subscriptions. No sessions yet, no batches.
+
 v5.1.8
  - add strong name to assemblies
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Fabric;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,12 +23,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// Gets the name of the monitored Service Bus Queue.
         /// </summary>
         protected string QueueName { get; }
-
-        /// <summary>
-        /// Gets the name of the monitored Service Bus Queue.
-        /// </summary>
-        [Obsolete("Replaced by QueueName")]
-        protected string ServiceBusQueueName => QueueName;
 
         /// <summary>
         /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
@@ -82,7 +77,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             string uri = SendConnectionString;
             return Task.FromResult(uri);
         }
-        
+
         /// <summary>
         /// This method causes the communication listener to close. Close is a terminal state and 
         ///             this method allows the communication listener to transition to this state in a
@@ -101,5 +96,23 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// Starts listening for messages on the configured Service Bus Queue.
         /// </summary>
         protected abstract void ListenForMessages();
+
+        /// <inheritdoc />
+        public override Task Complete(Message message)
+        {
+            return ServiceBusClient.CompleteAsync(message.SystemProperties.LockToken);
+        }
+
+        /// <inheritdoc />
+        public override Task Abandon(Message message, IDictionary<string, object> propertiesToModify = null)
+        {
+            return ServiceBusClient.AbandonAsync(message.SystemProperties.LockToken, propertiesToModify);
+        }
+
+        /// <inheritdoc />
+        public override Task DeadLetter(Message message, IDictionary<string, object> propertiesToModify = null)
+        {
+            return ServiceBusClient.DeadLetterAsync(message.SystemProperties.LockToken, propertiesToModify);
+        }
     }
 }
