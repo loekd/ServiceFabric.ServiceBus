@@ -6,7 +6,7 @@ using Microsoft.Azure.ServiceBus;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 
-namespace ServiceFabric.ServiceBus.Services.Netstd
+namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 {
     /// <summary>
     /// Implementation of <see cref="ICommunicationListener"/> that listens to a Service Bus Queue.

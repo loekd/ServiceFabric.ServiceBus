@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 
-namespace ServiceFabric.ServiceBus.Services.Netstd
+namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 {
     /// <summary>
     /// Abstract base implementation for <see cref="ICommunicationListener"/> connected to ServiceBus
