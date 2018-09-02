@@ -18,12 +18,13 @@ Contains implementations of `ICommunicationListener` that receive messages from 
 - ServiceBusSubscriptionBatchCommunicationListener
 - ServiceBusSubscriptionCommunicationListener
 
-Note: Session support is available too.
+Note: Session support is available too, in the package for Full Fx.
 
 ### ServiceFabric.ServiceBus.Clients
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients
-Receive BrokeredMessages in Service Fabric Reliable Services using the Communication Listener from the package 'ServiceFabric.ServiceBus.Services'.
+(Optional package) Receive BrokeredMessages in Service Fabric Reliable Services using the Communication Listener from the package 'ServiceFabric.ServiceBus.Services'.
 Provides a ServiceBusTopicCommunicationClient to be used with 'ServicePartitionClient'.
+
 *If you post messages to Service Bus in a different way, you won't need the client package.*
 
 ## Contribute!
