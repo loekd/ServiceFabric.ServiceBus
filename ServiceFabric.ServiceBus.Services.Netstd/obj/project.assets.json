@@ -6213,7 +6213,7 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "5.1.9",
+    "version": "6.0.1-preview",
     "restoreSettings": {
       "hideWarningsAndErrors": true
     },

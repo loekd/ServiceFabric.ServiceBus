@@ -2,7 +2,7 @@
 Need some help to get started? Have a look at: 'https://github.com/loekd/ServiceFabric.ServiceBus/tree/master/ServiceFabric.ServiceBus.Demo'
 
 ## Nuget Packages:
-Two packages, one for Receiving Brokered Messsages, and one (optional) for Sending them.
+Three packages, one for Receiving Brokered Messsages on the full .NET framework, one for Netstandard 2.0. One (optional) package for Sending them. 
 
 ### ServiceFabric.ServiceBus.Services
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services
@@ -34,7 +34,10 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
-v6.0.0
+v6.0.0-preview (netstandard version)
+ - allow factory to provide `IServiceBusMessageReceiver` instance to communication client.
+
+v6.0.0-preview (netstandard version)
  - add netstandard 2.0 version. Not fully backwards compatible due to different Service Bus package.
    Supports Queues and Subscriptions. No sessions yet, no batches.
 

@@ -55,6 +55,29 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         }
 
         /// <summary>
+        /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
+        /// </summary>
+        /// <param name="receiverFactory">(Required) Creates a handler that processes incoming messages.</param>
+        /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
+        /// <param name="serviceBusTopicName">The name of the monitored Service Bus Topic (optional, EntityPath is supported too)</param>
+        /// <param name="serviceBusSubscriptionName">The name of the monitored Service Bus Topic Subscription</param>
+        /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. (Returned as Service Endpoint.) </param>
+        /// <param name="serviceBusReceiveConnectionString">(Required) A Service Bus connection string that can be used for Receiving messages. 
+        /// </param>
+        public ServiceBusSubscriptionCommunicationListener(Func<IServiceBusCommunicationListener, IServiceBusMessageReceiver> receiverFactory,
+            ServiceContext context,
+            string serviceBusTopicName,
+            string serviceBusSubscriptionName,
+            string serviceBusSendConnectionString,
+            string serviceBusReceiveConnectionString)
+            : base(context, serviceBusTopicName, serviceBusSubscriptionName, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
+        {
+            if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
+            var serviceBusMessageReceiver = receiverFactory(this);
+            Receiver = serviceBusMessageReceiver ?? throw new ArgumentException("An insta", nameof(receiverFactory));
+        }
+
+        /// <summary>
         /// Starts listening for messages on the configured Service Bus Queue.
         /// </summary>
         protected override void ListenForMessages()

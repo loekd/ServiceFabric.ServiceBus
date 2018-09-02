@@ -46,7 +46,30 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             string serviceBusReceiveConnectionString)
             : base(context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
         {
-            Receiver = receiver;
+            Receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+        }
+
+        /// <summary>
+        /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
+        /// </summary>
+        /// <param name="receiverFactory">(Required) Creates a handler that processes incoming messages.</param>
+        /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
+        /// <param name="serviceBusQueueName">(Optional) The name of the monitored Service Bus Queue (EntityPath in connectionstring is supported too)</param>
+        /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
+        /// (Returned as Service Endpoint.).
+        /// </param>
+        /// <param name="serviceBusReceiveConnectionString">(Required) A Service Bus connection string that can be used for Receiving messages. 
+        /// </param>
+        public ServiceBusQueueCommunicationListener(Func<IServiceBusCommunicationListener, IServiceBusMessageReceiver> receiverFactory,
+            ServiceContext context,
+            string serviceBusQueueName,
+            string serviceBusSendConnectionString,
+            string serviceBusReceiveConnectionString)
+            : base(context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
+        {
+            if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
+            var serviceBusMessageReceiver = receiverFactory(this);
+            Receiver = serviceBusMessageReceiver ?? throw new ArgumentException("An insta", nameof(receiverFactory));
         }
 
         /// <summary>

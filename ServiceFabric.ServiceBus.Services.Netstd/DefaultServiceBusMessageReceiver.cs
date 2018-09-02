@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
     /// Upon failure, it will call <see cref="IServiceBusCommunicationListener.Abandon"/> and suppress the error.
     /// Also has dead-letter and cancellation support.
     /// </summary>
+    /// <remarks>Use the communication listener constructor that takes 
+    /// Func&lt;IServiceBusCommunicationListener, IServiceBusMessageReceiver&gt; receiverFactory</remarks>
     public abstract class DefaultServiceBusMessageReceiver : IServiceBusMessageReceiver
     {
         private readonly IServiceBusCommunicationListener _receiver;
@@ -31,10 +34,18 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// </summary>
         /// <param name="receiver"></param>
         /// <param name="logAction"></param>
-        protected DefaultServiceBusMessageReceiver(IServiceBusCommunicationListener receiver, Action<string> logAction = null)
+        protected DefaultServiceBusMessageReceiver(IServiceBusCommunicationListener receiver, Action<string> logAction)
         {
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
             LogAction = logAction;
+        }
+        /// <summary>
+        /// Creates a new instance using the provided log callback.
+        /// </summary>
+        /// <param name="receiver"></param>
+        protected DefaultServiceBusMessageReceiver(IServiceBusCommunicationListener receiver)
+        {
+            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
         }
 
         /// <summary>
@@ -61,8 +72,9 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         }
 
         /// <summary>
-        /// Called when an error is thrown from <see cref="ReceiveMessageAsync"/>. 
-        /// Return true if the error is handled. Return false to terminate the process.
+        /// Called when an error is thrown from <see cref="ReceiveMessageAsync"/>.
+        /// Logs the error using <see cref="LogAction"/> and calls <see cref="AbandonMessage"/>. 
+        /// When overridden: Return true if the error is handled. Return false to terminate the process.
         /// </summary>
         /// <param name="message"></param>
         /// <param name="ex"></param>
@@ -75,13 +87,25 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         }
 
         /// <summary>
+        /// Removes the lock on the provided message to put it back on the queue for later consumption.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="propertiesToModify"></param>
+        protected Task AbandonMessage(Message message, IDictionary<string, object> propertiesToModify)
+        {
+            WriteLog($"Moving message {message.MessageId} to dead letter queue.");
+            return _receiver.Abandon(message, propertiesToModify);
+        }
+
+        /// <summary>
         /// Moves the provided message to the dead letter queue.
         /// </summary>
         /// <param name="message"></param>
-        protected Task DeadLetterMessage(Message message)
+        /// <param name="propertiesToModify"></param>
+        protected Task DeadLetterMessage(Message message, IDictionary<string, object> propertiesToModify)
         {
             WriteLog($"Moving message {message.MessageId} to dead letter queue.");
-            return _receiver.DeadLetter(message);
+            return _receiver.DeadLetter(message, propertiesToModify);
         }
 
         /// <summary>
