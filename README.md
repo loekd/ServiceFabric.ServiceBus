@@ -35,6 +35,10 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
+
+v6.0.2 
+ - Netstandard package is no longer in preview
+
 v6.0.0-preview (netstandard version)
  - allow factory to provide `IServiceBusMessageReceiver` instance to communication client.
 
