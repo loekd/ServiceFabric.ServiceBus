@@ -1,5 +1,5 @@
 # Netstandard 2.0
-Check out the new preview version of the Netstandard 2.0 services package and provide feedback!
+Check out the Netstandard 2.0 services package and provide feedback!
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services.Netstd/6.0.0-preview
 
 # Demo Project
