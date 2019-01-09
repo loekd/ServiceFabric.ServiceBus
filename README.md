@@ -1,6 +1,6 @@
 # Netstandard 2.0
 Check out the Netstandard 2.0 services package and provide feedback!
-https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services.Netstd/6.0.0-preview
+https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services.Netstd/6.0.3
 
 # Demo Project
 Need some help to get started? Have a look at: 'https://github.com/loekd/ServiceFabric.ServiceBus/tree/master/ServiceFabric.ServiceBus.Demo'
