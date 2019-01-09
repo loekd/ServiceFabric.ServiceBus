@@ -40,6 +40,10 @@ Please also make sure all feature additions have a corresponding unit test.
 ## Release notes:
 
 
+Loek
+v6.0.3 
+ - add IServiceBusCommunicationListener to DefaultServiceBusMessageReceiver
+
 v6.0.2 
  - Netstandard package is no longer in preview
 

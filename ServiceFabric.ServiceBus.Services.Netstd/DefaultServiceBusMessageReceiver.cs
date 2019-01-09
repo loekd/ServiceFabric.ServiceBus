@@ -18,7 +18,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
     /// Func&lt;IServiceBusCommunicationListener, IServiceBusMessageReceiver&gt; receiverFactory</remarks>
     public abstract class DefaultServiceBusMessageReceiver : IServiceBusMessageReceiver
     {
-        private readonly IServiceBusCommunicationListener _receiver;
 
         /// <summary>
         /// Gets or sets a callback for writing logs. (Defaults to null)
@@ -28,7 +27,12 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// <inheritdoc />
         /// <summary>Defaults to true.</summary>
         public bool AutoComplete { get; set; } = true;
-    
+
+        /// <summary>
+        /// Provides access to the provided <see cref="IServiceBusCommunicationListener"/>.
+        /// </summary>
+        protected IServiceBusCommunicationListener Listener { get; }
+
         /// <summary>
         /// Creates a new instance using the provided log callback.
         /// </summary>
@@ -36,7 +40,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// <param name="logAction"></param>
         protected DefaultServiceBusMessageReceiver(IServiceBusCommunicationListener receiver, Action<string> logAction)
         {
-            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            Listener = receiver ?? throw new ArgumentNullException(nameof(receiver));
             LogAction = logAction;
         }
         /// <summary>
@@ -45,7 +49,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// <param name="receiver"></param>
         protected DefaultServiceBusMessageReceiver(IServiceBusCommunicationListener receiver)
         {
-            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            Listener = receiver ?? throw new ArgumentNullException(nameof(receiver));
         }
 
         /// <summary>
@@ -61,7 +65,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
                 await ReceiveMessageImplAsync(message, cancellationToken);
                 if (AutoComplete)
                 {
-                    await _receiver.Complete(message);
+                    await Listener.Complete(message);
                 }
             }
             catch (Exception ex)
@@ -81,7 +85,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         protected virtual async Task<bool> HandleReceiveMessageError(Message message, Exception ex)
         {
             WriteLog($"Abandoning message {message.MessageId}. Error:'{ex}'.");
-            await _receiver.Abandon(message).ConfigureAwait(false);
+            await Listener.Abandon(message).ConfigureAwait(false);
             //assuming overriding code handles exceptions.
             return true;
         }
@@ -94,7 +98,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         protected Task AbandonMessage(Message message, IDictionary<string, object> propertiesToModify)
         {
             WriteLog($"Moving message {message.MessageId} to dead letter queue.");
-            return _receiver.Abandon(message, propertiesToModify);
+            return Listener.Abandon(message, propertiesToModify);
         }
 
         /// <summary>
@@ -105,7 +109,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         protected Task DeadLetterMessage(Message message, IDictionary<string, object> propertiesToModify)
         {
             WriteLog($"Moving message {message.MessageId} to dead letter queue.");
-            return _receiver.DeadLetter(message, propertiesToModify);
+            return Listener.DeadLetter(message, propertiesToModify);
         }
 
         /// <summary>
