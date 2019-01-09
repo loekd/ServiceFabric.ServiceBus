@@ -39,9 +39,7 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
-
-Loek
-v6.0.3 
+v6.0.3 (Netstd only)
  - add IServiceBusCommunicationListener to DefaultServiceBusMessageReceiver
 
 v6.0.2 
