@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26510.0
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AEE7481C-A281-41EA-A7D4-A70C786E47A1}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceFabric.ServiceBus.Services", "ServiceFabric.ServiceBus.Services\ServiceFabric.ServiceBus.Services.csproj", "{0C1AD577-93E3-437C-A0C7-5918E0F4D575}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceFabric.ServiceBus.Services.Netstd", "ServiceFabric.ServiceBus.Services.Netstd\ServiceFabric.ServiceBus.Services.Netstd.csproj", "{3BC35E4C-2346-40F8-9E48-58A55D99326E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,6 +25,10 @@ Global
 		{0C1AD577-93E3-437C-A0C7-5918E0F4D575}.Debug|x64.Build.0 = Debug|x64
 		{0C1AD577-93E3-437C-A0C7-5918E0F4D575}.Release|x64.ActiveCfg = Release|x64
 		{0C1AD577-93E3-437C-A0C7-5918E0F4D575}.Release|x64.Build.0 = Release|x64
+		{3BC35E4C-2346-40F8-9E48-58A55D99326E}.Debug|x64.ActiveCfg = Debug|x64
+		{3BC35E4C-2346-40F8-9E48-58A55D99326E}.Debug|x64.Build.0 = Debug|x64
+		{3BC35E4C-2346-40F8-9E48-58A55D99326E}.Release|x64.ActiveCfg = Release|x64
+		{3BC35E4C-2346-40F8-9E48-58A55D99326E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@ https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services.Netstd/6.0.0-pr
 Need some help to get started? Have a look at: 'https://github.com/loekd/ServiceFabric.ServiceBus/tree/master/ServiceFabric.ServiceBus.Demo'
 
 ## Nuget Packages:
-Two packages, one for Receiving Brokered Messsages, and one (optional) for Sending them.
+Three packages, one for Receiving Brokered Messsages on the full .NET framework, one for Netstandard 2.0. One (optional) package for Sending them. 
 
 ### ServiceFabric.ServiceBus.Services
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Services
@@ -22,12 +22,13 @@ Contains implementations of `ICommunicationListener` that receive messages from 
 - ServiceBusSubscriptionBatchCommunicationListener
 - ServiceBusSubscriptionCommunicationListener
 
-Note: Session support is available too.
+Note: Session support is available too, in the package for Full Fx.
 
 ### ServiceFabric.ServiceBus.Clients
 https://www.nuget.org/packages/ServiceFabric.ServiceBus.Clients
-Receive BrokeredMessages in Service Fabric Reliable Services using the Communication Listener from the package 'ServiceFabric.ServiceBus.Services'.
+(Optional package) Receive BrokeredMessages in Service Fabric Reliable Services using the Communication Listener from the package 'ServiceFabric.ServiceBus.Services'.
 Provides a ServiceBusTopicCommunicationClient to be used with 'ServicePartitionClient'.
+
 *If you post messages to Service Bus in a different way, you won't need the client package.*
 
 ## Contribute!
@@ -37,6 +38,17 @@ Doing so will allow me to simply accept the PR, which will automatically trigger
 Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
+
+
+v6.0.2 
+ - Netstandard package is no longer in preview
+
+v6.0.0-preview (netstandard version)
+ - allow factory to provide `IServiceBusMessageReceiver` instance to communication client.
+
+v6.0.0-preview (netstandard version)
+ - add netstandard 2.0 version. Not fully backwards compatible due to different Service Bus package.
+   Supports Queues and Subscriptions. No sessions yet, no batches.
 
 v5.1.8
  - add strong name to assemblies
