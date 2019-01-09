@@ -56,3 +56,4 @@
 /ServiceFabric.ServiceBus.Clients/bin/x64/Release
 **/*.nupkg
 /ServiceFabric.ServiceBus.Services.Netstd/obj
+/ServiceFabric.ServiceBus.Services.Netstd/bin/
