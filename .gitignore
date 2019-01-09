@@ -55,3 +55,4 @@
 **/*.snk
 /ServiceFabric.ServiceBus.Clients/bin/x64/Release
 **/*.nupkg
+/ServiceFabric.ServiceBus.Services.Netstd/obj
