@@ -45,8 +45,12 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
     {
         private readonly CancellationTokenSource _stopProcessingMessageTokenSource;
 
+        protected int ConcurrencyCount;
+
+        protected bool IsClosing;
+
         //prevents aborts during the processing of a message
-        protected ManualResetEvent ProcessingMessage { get; } = new ManualResetEvent(true);
+        protected SemaphoreSlim ProcessingMessage { get; set; }
 
         /// <summary>
         /// Gets the <see cref="ServiceContext"/> that was used to create this instance. Can be null.
@@ -68,6 +72,12 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// or <see cref="Abort"/> was called.
         /// </summary>
         protected CancellationToken StopProcessingMessageToken { get; }
+
+        /// <summary>
+        /// Gets or sets the amount of time to wait for remaining messages to process when <see cref="CloseAsync(CancellationToken)"/> is invoked.
+        /// Defaults to 1 minute.
+        /// </summary>
+        public TimeSpan CloseTimeout { get; set; } = TimeSpan.FromMinutes(1);
 
         /// <summary>
         /// Gets or sets the prefetch size when receiving Service Bus Messages. (Defaults to 0, which indicates no prefetch)
@@ -144,9 +154,21 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         public Task CloseAsync(CancellationToken cancellationToken)
         {
             WriteLog("Service Bus Communication Listnener closing");
+            IsClosing = true;
             _stopProcessingMessageTokenSource.Cancel();
+
             //Wait for Message processing to complete..
-            ProcessingMessage.WaitOne();
+            Task.WaitAny(
+                // Timeout task.
+                Task.Run(() => Thread.Sleep(CloseTimeout)),
+                // Wait for all processing messages to finish.
+                Task.Run(() =>
+                {
+                    while(ConcurrencyCount != 0)
+                    {
+                        Thread.Yield();
+                    }
+                }));
             ProcessingMessage.Dispose();
             return CloseImplAsync(cancellationToken);
         }
@@ -202,8 +224,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing) return;
-            ProcessingMessage.Set();
-            ProcessingMessage.Dispose();
+
             _stopProcessingMessageTokenSource.Cancel();
             _stopProcessingMessageTokenSource.Dispose();
         }
