@@ -91,6 +91,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             {
                 options.MaxConcurrentCalls = MaxConcurrentCalls.Value;
                 ProcessingMessage = new SemaphoreSlim(options.MaxConcurrentCalls, options.MaxConcurrentCalls);
+                ConcurrencyCount = options.MaxConcurrentCalls;
             }
             else
             {
@@ -120,7 +121,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             try
             {
                 ProcessingMessage.Wait();
-                Interlocked.Increment(ref ConcurrencyCount);
                 var combined = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, StopProcessingMessageToken).Token;
                 await Receiver.ReceiveMessageAsync(message, combined);
                 if (Receiver.AutoComplete)
@@ -131,7 +131,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             finally
             {
                 ProcessingMessage.Release();
-                Interlocked.Decrement(ref ConcurrencyCount);
             }
         }
     }

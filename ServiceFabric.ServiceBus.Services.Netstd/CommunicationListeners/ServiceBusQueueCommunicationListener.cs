@@ -144,8 +144,13 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             if (MaxConcurrentCalls.HasValue)
             {
                 ProcessingMessage.Release(MaxConcurrentCalls.Value);
-                ProcessingMessage.Dispose();
             }
+            else
+            {
+                ProcessingMessage.Release();
+            }
+
+            ProcessingMessage.Dispose();
 
             base.Dispose(disposing);
         }
