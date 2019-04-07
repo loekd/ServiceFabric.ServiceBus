@@ -45,7 +45,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
     {
         private readonly CancellationTokenSource _stopProcessingMessageTokenSource;
 
-        protected int ConcurrencyCount;
+        protected int ConcurrencyCount = 1;
 
         protected bool IsClosing;
 
@@ -164,11 +164,13 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
                 // Wait for all processing messages to finish.
                 Task.Run(() =>
                 {
-                    while(ConcurrencyCount != 0)
+                    while(ConcurrencyCount > 0)
                     {
-                        Thread.Yield();
+                        ProcessingMessage.Wait();
+                        ConcurrencyCount--;
                     }
                 }));
+
             ProcessingMessage.Dispose();
             return CloseImplAsync(cancellationToken);
         }
