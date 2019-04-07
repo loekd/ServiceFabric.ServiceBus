@@ -39,6 +39,9 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
+v6.0.4 (Netstd only)
+ - fix bug that would cause the ServiceBusCommunicationListener to close before all messages are processed, when MaxConcurrentCalls is greater than 1.
+
 v6.0.3 (Netstd only)
  - add IServiceBusCommunicationListener to DefaultServiceBusMessageReceiver
 
