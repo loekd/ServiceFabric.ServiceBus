@@ -45,12 +45,8 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
     {
         private readonly CancellationTokenSource _stopProcessingMessageTokenSource;
 
-        protected int ConcurrencyCount = 1;
-
-        protected bool IsClosing;
-
         //prevents aborts during the processing of a message
-        protected SemaphoreSlim ProcessingMessage { get; set; }
+        protected SemaphoreSlim ProcessingMessage { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="ServiceContext"/> that was used to create this instance. Can be null.
@@ -75,9 +71,9 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 
         /// <summary>
         /// Gets or sets the amount of time to wait for remaining messages to process when <see cref="CloseAsync(CancellationToken)"/> is invoked.
-        /// Defaults to 1 minute.
+        /// Defaults to 1.1 minutes, to allow processing or lock timeout.
         /// </summary>
-        public TimeSpan CloseTimeout { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan CloseTimeout { get; set; } = TimeSpan.FromMinutes(1.1);
 
         /// <summary>
         /// Gets or sets the prefetch size when receiving Service Bus Messages. (Defaults to 0, which indicates no prefetch)
@@ -104,6 +100,16 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// Retry policy for client.
         /// </summary>
         public RetryPolicy RetryPolicy { get; set; }
+
+        /// <summary>
+        /// (Ignored when using Sessions) Gets or sets the MaxConcurrentCalls that will be passed to the Receiver. Can be null. 
+        /// </summary>
+        public int? MaxConcurrentCalls { get; set; }
+
+        /// <summary>
+        /// Indicates connections are closing
+        /// </summary>
+        public bool IsClosing { get; set; }
 
 
         /// <summary>
@@ -151,29 +157,32 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// <returns>
         /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation.
         /// </returns>
-        public Task CloseAsync(CancellationToken cancellationToken)
+        public async Task CloseAsync(CancellationToken cancellationToken)
         {
-            WriteLog("Service Bus Communication Listnener closing");
+            WriteLog("Service Bus Communication Listener closing");
             IsClosing = true;
             _stopProcessingMessageTokenSource.Cancel();
 
             //Wait for Message processing to complete..
-            Task.WaitAny(
+            await Task.WhenAny(
                 // Timeout task.
-                Task.Run(() => Thread.Sleep(CloseTimeout)),
-                // Wait for all processing messages to finish.
+                Task.Delay(CloseTimeout, cancellationToken),
+                // Wait for all processing messages to finish by stealing semaphore entries.
                 Task.Run(() =>
                 {
-                    while(ConcurrencyCount > 0)
+                    for (int i = 0; i < (MaxConcurrentCalls ?? 1); i++)
                     {
-                        ProcessingMessage.Wait();
-                        ConcurrencyCount--;
+                        // ReSharper disable once AccessToDisposedClosure
+                        // ReSharper disable once EmptyGeneralCatchClause
+                        try { ProcessingMessage.Wait(cancellationToken);}
+                        catch { }
                     }
-                }));
+                }, cancellationToken));
 
             ProcessingMessage.Dispose();
-            return CloseImplAsync(cancellationToken);
+            await CloseImplAsync(cancellationToken);
         }
+
 
         /// <summary>
         /// This method causes the communication listener to close. Close is a terminal state and
@@ -182,8 +191,24 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// </summary>
         public virtual void Abort()
         {
-            WriteLog("Service Bus Communication Listnener aborting");
+            WriteLog("Service Bus Communication Listener aborting");
             Dispose();
+        }
+
+        /// <summary>
+        /// Starts listening for messages on the configured Service Bus Queue / Subscription
+        /// Make sure to call 'base' when overriding.
+        /// </summary>
+        protected virtual void ListenForMessages()
+        {
+            if (MaxConcurrentCalls.HasValue)
+            {
+                ProcessingMessage = new SemaphoreSlim(MaxConcurrentCalls.Value, MaxConcurrentCalls.Value);
+            }
+            else
+            {
+                ProcessingMessage = new SemaphoreSlim(1, 1);
+            }
         }
 
         /// <summary>
@@ -229,6 +254,9 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 
             _stopProcessingMessageTokenSource.Cancel();
             _stopProcessingMessageTokenSource.Dispose();
+
+            ProcessingMessage.Release(MaxConcurrentCalls ?? 1);
+            ProcessingMessage.Dispose();
         }
 
         /// <inheritdoc />

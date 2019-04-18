@@ -103,13 +103,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             await ServiceBusClient.CloseAsync();
         }
 
-
-        /// <summary>
-        /// Starts listening for messages on the configured Service Bus Queue.
-        /// </summary>
-        protected abstract void ListenForMessages();
-
-
         /// <inheritdoc />
         public override Task Complete(Message message)
         {

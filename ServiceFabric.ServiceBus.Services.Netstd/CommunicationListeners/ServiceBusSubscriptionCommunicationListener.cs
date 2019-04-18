@@ -19,11 +19,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         public TimeSpan? AutoRenewTimeout { get; set; }
 
         /// <summary>
-        /// (Ignored when using Sessions) Gets or sets the MaxConcurrentCalls that will be passed to the <see cref="Receiver"/>. Can be null. 
-        /// </summary>
-        public int? MaxConcurrentCalls { get; set; }
-
-        /// <summary>
         /// (Ignored when not using Sessions) Gets or sets the MaxConcurrentSessions that will be passed to the <see cref="Receiver"/>. Can be null. 
         /// </summary>
         public int? MaxConcurrentSessions { get; set; }
@@ -74,7 +69,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         {
             if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
             var serviceBusMessageReceiver = receiverFactory(this);
-            Receiver = serviceBusMessageReceiver ?? throw new ArgumentException("An insta", nameof(receiverFactory));
+            Receiver = serviceBusMessageReceiver ?? throw new ArgumentException("Receiver factory cannot return null.", nameof(receiverFactory));
         }
 
         /// <summary>
@@ -82,6 +77,8 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// </summary>
         protected override void ListenForMessages()
         {
+            base.ListenForMessages();
+
             var options = new MessageHandlerOptions(ExceptionReceivedHandler);
             if (AutoRenewTimeout.HasValue)
             {
@@ -90,12 +87,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             if (MaxConcurrentCalls.HasValue)
             {
                 options.MaxConcurrentCalls = MaxConcurrentCalls.Value;
-                ProcessingMessage = new SemaphoreSlim(options.MaxConcurrentCalls, options.MaxConcurrentCalls);
-                ConcurrencyCount = options.MaxConcurrentCalls;
-            }
-            else
-            {
-                ProcessingMessage = new SemaphoreSlim(1, 1);
             }
             ServiceBusClient.RegisterMessageHandler(ReceiveMessageAsync, options);
         }
@@ -120,7 +111,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         {
             try
             {
-                ProcessingMessage.Wait();
+                ProcessingMessage.Wait(cancellationToken);
                 var combined = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, StopProcessingMessageToken).Token;
                 await Receiver.ReceiveMessageAsync(message, combined);
                 if (Receiver.AutoComplete)

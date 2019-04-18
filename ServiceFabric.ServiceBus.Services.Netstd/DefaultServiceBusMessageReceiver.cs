@@ -10,7 +10,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
 {
     /// <summary>
     /// Implementation of <see cref="IServiceBusMessageReceiver"/> that can automatically call <see cref="IServiceBusCommunicationListener.Complete"/>
-    /// on the received message after successfull processing.
+    /// on the received message after successful processing.
     /// Upon failure, it will call <see cref="IServiceBusCommunicationListener.Abandon"/> and suppress the error.
     /// Also has dead-letter and cancellation support.
     /// </summary>
