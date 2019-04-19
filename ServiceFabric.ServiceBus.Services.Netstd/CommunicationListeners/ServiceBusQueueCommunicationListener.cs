@@ -72,8 +72,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// </summary>
         protected override void ListenForMessages()
         {
-            base.ListenForMessages();
-
             var options = new MessageHandlerOptions(ExceptionReceivedHandler);
             if (AutoRenewTimeout.HasValue)
             {

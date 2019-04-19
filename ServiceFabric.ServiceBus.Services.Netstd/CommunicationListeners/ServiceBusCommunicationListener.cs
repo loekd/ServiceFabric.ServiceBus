@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.Azure.ServiceBus;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using System;
 using System.Collections.Generic;
 using System.Fabric;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
 
 namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 {
@@ -146,7 +146,19 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation. The result of the Task is
         /// the endpoint string.
         /// </returns>
-        public abstract Task<string> OpenAsync(CancellationToken cancellationToken);
+        public Task<string> OpenAsync(CancellationToken cancellationToken)
+        {
+            if (MaxConcurrentCalls.HasValue)
+            {
+                ProcessingMessage = new SemaphoreSlim(MaxConcurrentCalls.Value, MaxConcurrentCalls.Value);
+            }
+            else
+            {
+                ProcessingMessage = new SemaphoreSlim(1, 1);
+            }
+
+            return OpenImplAsync(cancellationToken);
+        }
 
         /// <summary>
         /// This method causes the communication listener to close. Close is a terminal state and 
@@ -174,7 +186,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
                     {
                         // ReSharper disable once AccessToDisposedClosure
                         // ReSharper disable once EmptyGeneralCatchClause
-                        try { ProcessingMessage.Wait(cancellationToken);}
+                        try { ProcessingMessage.Wait(cancellationToken); }
                         catch { }
                     }
                 }, cancellationToken));
@@ -199,16 +211,20 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// Starts listening for messages on the configured Service Bus Queue / Subscription
         /// Make sure to call 'base' when overriding.
         /// </summary>
-        protected virtual void ListenForMessages()
+        protected abstract void ListenForMessages();
+
+        /// <summary>
+        /// This method causes the communication listener to be opened. Once the Open
+        /// completes, the communication listener becomes usable - accepts and sends messages.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>
+        /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation. The result of the Task is
+        /// the endpoint string.
+        /// </returns>
+        protected virtual Task<string> OpenImplAsync(CancellationToken cancellationToken)
         {
-            if (MaxConcurrentCalls.HasValue)
-            {
-                ProcessingMessage = new SemaphoreSlim(MaxConcurrentCalls.Value, MaxConcurrentCalls.Value);
-            }
-            else
-            {
-                ProcessingMessage = new SemaphoreSlim(1, 1);
-            }
+            return Task.FromResult("endpoint://");
         }
 
         /// <summary>
