@@ -19,11 +19,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         public TimeSpan? AutoRenewTimeout { get; set; }
 
         /// <summary>
-        /// (Ignored when using Sessions) Gets or sets the MaxConcurrentCalls that will be passed to the <see cref="Receiver"/>. Can be null. 
-        /// </summary>
-        public int? MaxConcurrentCalls { get; set; }
-
-        /// <summary>
         /// Processor for messages.
         /// </summary>
         protected IServiceBusMessageReceiver Receiver { get; }
@@ -69,7 +64,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         {
             if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
             var serviceBusMessageReceiver = receiverFactory(this);
-            Receiver = serviceBusMessageReceiver ?? throw new ArgumentException("An insta", nameof(receiverFactory));
+            Receiver = serviceBusMessageReceiver ?? throw new ArgumentException("Receiver factory cannot return null.", nameof(receiverFactory));
         }
 
         /// <summary>
@@ -86,6 +81,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             {
                 options.MaxConcurrentCalls = MaxConcurrentCalls.Value;
             }
+
             ServiceBusClient.RegisterMessageHandler(ReceiveMessageAsync, options);
         }
 
@@ -109,7 +105,15 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         {
             try
             {
-                ProcessingMessage.Reset();
+                if (IsClosing)
+                {
+                    // We want the thread to sleep and not return immediately.
+                    // Returning immediately could increment the message fail count and send it to dead letter.
+                    Thread.Sleep(CloseTimeout);
+                    return;
+                }
+
+                ProcessingMessage.Wait(cancellationToken);
                 var combined = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, StopProcessingMessageToken).Token;
                 await Receiver.ReceiveMessageAsync(message, combined);
                 if (Receiver.AutoComplete)
@@ -119,8 +123,26 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             }
             finally
             {
-                ProcessingMessage.Set();
+                ProcessingMessage.Release();
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+
+            if (MaxConcurrentCalls.HasValue)
+            {
+                ProcessingMessage.Release(MaxConcurrentCalls.Value);
+            }
+            else
+            {
+                ProcessingMessage.Release();
+            }
+
+            ProcessingMessage.Dispose();
+
+            base.Dispose(disposing);
         }
     }
 }

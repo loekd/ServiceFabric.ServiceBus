@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.Azure.ServiceBus;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Runtime;
+using System;
 using System.Collections.Generic;
 using System.Fabric;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
-using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 {
@@ -54,7 +54,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// A <see cref="T:System.Threading.Tasks.Task">Task</see> that represents outstanding operation. The result of the Task is
         ///             the endpoint string.
         /// </returns>
-        public override Task<string> OpenAsync(CancellationToken cancellationToken)
+        protected override Task<string> OpenImplAsync(CancellationToken cancellationToken)
         {
             var builder = new ServiceBusConnectionStringBuilder(ReceiveConnectionString);
             if (string.IsNullOrWhiteSpace(builder.EntityPath))
@@ -91,11 +91,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         {
             await ServiceBusClient.CloseAsync();
         }
-
-        /// <summary>
-        /// Starts listening for messages on the configured Service Bus Queue.
-        /// </summary>
-        protected abstract void ListenForMessages();
 
         /// <inheritdoc />
         public override Task Complete(Message message)
