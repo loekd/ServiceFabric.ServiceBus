@@ -39,7 +39,10 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
-v6.0.4 (Netstd only)
+v7.0.1 (Netstd only)
+ - fix bug that completes messages twice when auto complete is true
+
+v7.0.0 (Netstd only)
  - fix bug that would cause the ServiceBusCommunicationListener to close before all messages are processed, when MaxConcurrentCalls is greater than 1.
 
 v6.0.3 (Netstd only)
@@ -134,14 +137,14 @@ v3.5.0
   [..]
   Action<string> logAction = log => ServiceEventSource.Current.ServiceMessage(this, log);
   new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
-				new Handler(logAction)
-				, context
-				, serviceBusQueueName
+                new Handler(logAction)
+                , context
+                , serviceBusQueueName
                 , requireSessions: false)
-			{
-			    MessageLockRenewTimeSpan = TimeSpan.FromSeconds(50),  //auto renew every 50s, so processing can take longer than 60s (default lock duration).
+            {
+                MessageLockRenewTimeSpan = TimeSpan.FromSeconds(50),  //auto renew every 50s, so processing can take longer than 60s (default lock duration).
                 LogAction = logAction
-			}, "StatelessService-ServiceBusQueueListener");
+            }, "StatelessService-ServiceBusQueueListener");
  [..]
   ```
 
@@ -187,14 +190,14 @@ Make sure your projects are configured to build as 64 bit programs!
 ```javascript
 internal sealed class Handler : IServiceBusMessageReceiver
 {
-	private readonly StatefulService _service;
+    private readonly StatefulService _service;
 
-	public Handler(StatefulService service)
-	{
-		_service = service;
-	}
-	
-	public Task ReceiveMessageAsync(BrokeredMessage message, MessageSession session, CancellationToken cancellationToken)
+    public Handler(StatefulService service)
+    {
+        _service = service;
+    }
+    
+    public Task ReceiveMessageAsync(BrokeredMessage message, MessageSession session, CancellationToken cancellationToken)
         {
             ServiceEventSource.Current.ServiceMessage(_service, $"Handling subscription message {message.MessageId}");
             return Task.FromResult(true);
@@ -206,20 +209,20 @@ internal sealed class Handler : IServiceBusMessageReceiver
 ```javascript
 internal sealed class SampleQueueListeningStatefulService : StatefulService
 {
-	protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
-	{
-		// In the configuration file, define connection strings: 
-		// "Microsoft.ServiceBus.ConnectionString.Receive"
-		// and "Microsoft.ServiceBus.ConnectionString.Send"
-			
-		// Also, define a QueueName:
-		string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
+    protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
+    {
+        // In the configuration file, define connection strings: 
+        // "Microsoft.ServiceBus.ConnectionString.Receive"
+        // and "Microsoft.ServiceBus.ConnectionString.Send"
+            
+        // Also, define a QueueName:
+        string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
 
-		yield return new ServiceReplicaListener(context => new ServiceBusQueueCommunicationListener(
-			new Handler(this)
-			, context				
-			, serviceBusQueueName), "StatefulService-ServiceBusQueueListener");
-	}
+        yield return new ServiceReplicaListener(context => new ServiceBusQueueCommunicationListener(
+            new Handler(this)
+            , context				
+            , serviceBusQueueName), "StatefulService-ServiceBusQueueListener");
+    }
 }
 ```
 ------------------------------------
@@ -227,22 +230,22 @@ internal sealed class SampleQueueListeningStatefulService : StatefulService
 ```javascript
 internal sealed class SampleSubscriptionListeningStatefulService : StatefulService
 {
-	protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
-	{
-		// In the configuration file, define connection strings: 
-		// "Microsoft.ServiceBus.ConnectionString.Receive"
-		// and "Microsoft.ServiceBus.ConnectionString.Send"
-			
-		// Also, define Topic & Subscription Names:
-		string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
-		string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
+    protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
+    {
+        // In the configuration file, define connection strings: 
+        // "Microsoft.ServiceBus.ConnectionString.Receive"
+        // and "Microsoft.ServiceBus.ConnectionString.Send"
+            
+        // Also, define Topic & Subscription Names:
+        string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
+        string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
 
-		yield return new ServiceReplicaListener(context => new ServiceBusSubscriptionCommunicationListener(
-			new Handler(this)
-			, context			
-			, serviceBusTopicName
-			, serviceBusSubscriptionName), "StatefulService-ServiceBusSubscriptionListener");
-	}
+        yield return new ServiceReplicaListener(context => new ServiceBusSubscriptionCommunicationListener(
+            new Handler(this)
+            , context			
+            , serviceBusTopicName
+            , serviceBusSubscriptionName), "StatefulService-ServiceBusSubscriptionListener");
+    }
 }
 ```
 ------------------------------------
@@ -250,19 +253,19 @@ internal sealed class SampleSubscriptionListeningStatefulService : StatefulServi
 ```javascript
 internal sealed class SampleQueueListeningStatelessService : StatelessService
 {
-	protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
-	{
-		// In the configuration file, define connection strings: 
-		// "Microsoft.ServiceBus.ConnectionString.Receive"
-		// and "Microsoft.ServiceBus.ConnectionString.Send"
-			
-		// Also, define a QueueName:
-		string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
-		yield return new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
-			new Handler(this)
-			, context			
-			, serviceBusQueueName), "StatelessService-ServiceBusQueueListener");
-	}
+    protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
+    {
+        // In the configuration file, define connection strings: 
+        // "Microsoft.ServiceBus.ConnectionString.Receive"
+        // and "Microsoft.ServiceBus.ConnectionString.Send"
+            
+        // Also, define a QueueName:
+        string serviceBusQueueName = CloudConfigurationManager.GetSetting("QueueName");
+        yield return new ServiceInstanceListener(context => new ServiceBusQueueCommunicationListener(
+            new Handler(this)
+            , context			
+            , serviceBusQueueName), "StatelessService-ServiceBusQueueListener");
+    }
 }
 ```
 ------------------------------------
@@ -270,22 +273,22 @@ internal sealed class SampleQueueListeningStatelessService : StatelessService
 ```javascript
 internal sealed class SampleSubscriptionListeningStatelessService : StatelessService
 {
-	protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
-	{
-		// In the configuration file, define connection strings: 
-		// "Microsoft.ServiceBus.ConnectionString.Receive"
-		// and "Microsoft.ServiceBus.ConnectionString.Send"
-			
-		// Also, define Topic & Subscription Names:
-		string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
-		string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
+    protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
+    {
+        // In the configuration file, define connection strings: 
+        // "Microsoft.ServiceBus.ConnectionString.Receive"
+        // and "Microsoft.ServiceBus.ConnectionString.Send"
+            
+        // Also, define Topic & Subscription Names:
+        string serviceBusTopicName = CloudConfigurationManager.GetSetting("TopicName");
+        string serviceBusSubscriptionName = CloudConfigurationManager.GetSetting("SubscriptionName");
 
-		yield return new ServiceInstanceListener(context => new ServiceBusSubscriptionCommunicationListener(
-			new Handler(this)
-			, context
-			, serviceBusTopicName
-			, serviceBusSubscriptionName), "StatelessService-ServiceBusSubscriptionListener");
-	}
+        yield return new ServiceInstanceListener(context => new ServiceBusSubscriptionCommunicationListener(
+            new Handler(this)
+            , context
+            , serviceBusTopicName
+            , serviceBusSubscriptionName), "StatelessService-ServiceBusSubscriptionListener");
+    }
 }
 ```
 
@@ -314,9 +317,9 @@ var servicePartitionClient = new ServicePartitionClient<ServiceBusTopicCommunica
 //use the proxy to send a message to the Service
 servicePartitionClient.InvokeWithRetry(c => c.SendMessage(new BrokeredMessage()
 {
-	Properties =
-	{
-		{ "TestKey", "TestValue" }
-	}
+    Properties =
+    {
+        { "TestKey", "TestValue" }
+    }
 }));
 ```

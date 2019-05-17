@@ -116,10 +116,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
                 ProcessingMessage.Wait(cancellationToken);
                 var combined = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, StopProcessingMessageToken).Token;
                 await Receiver.ReceiveMessageAsync(message, combined);
-                if (Receiver.AutoComplete)
-                {
-                    await ServiceBusClient.CompleteAsync(message.SystemProperties.LockToken);
-                }
             }
             finally
             {
