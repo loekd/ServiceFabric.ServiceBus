@@ -39,6 +39,9 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
+v7.0.2 (Netstd only)
+ - add `CompleteMessage` to `DefaultServiceBusMessageReceiver` to allow easy message completion.
+
 v7.0.1 (Netstd only)
  - fix bug that completes messages twice when auto complete is true
 

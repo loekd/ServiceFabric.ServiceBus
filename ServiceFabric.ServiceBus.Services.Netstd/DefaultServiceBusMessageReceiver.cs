@@ -62,10 +62,10 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         {
             try
             {
-                await ReceiveMessageImplAsync(message, cancellationToken);
+                await ReceiveMessageImplAsync(message, cancellationToken).ConfigureAwait(false);
                 if (AutoComplete)
                 {
-                    await Listener.Complete(message);
+                    await CompleteMessage(message).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -110,6 +110,16 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         {
             WriteLog($"Moving message {message.MessageId} to dead letter queue.");
             return Listener.DeadLetter(message, propertiesToModify);
+        }
+
+        /// <summary>
+        /// Completes the provided message.
+        /// </summary>
+        /// <param name="message"></param>
+        protected Task CompleteMessage(Message message)
+        {
+            WriteLog($"Completing message {message.MessageId}.");
+            return Listener.Complete(message);
         }
 
         /// <summary>
