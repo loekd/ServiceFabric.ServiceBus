@@ -12,8 +12,7 @@ using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
 namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
 {
     [TestFixture]
-    public class
-        GenericServiceBusCommunicationListener_HandlerFactory_Tests : GenericServiceBusCommunicationListenerTestBase
+    public class GenericServiceBusCommunicationListener_HandlerFactory_Tests
     {
         private IServiceBusMessageHandlerFactory _handlerFactory;
         private IServiceBusMessageHandler _handler;

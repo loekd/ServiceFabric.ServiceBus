@@ -12,15 +12,15 @@ using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
 namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
 {
     [TestFixture]
-    public class GenericServiceBusCommunicationListener_HandlerFunc_Tests:GenericServiceBusCommunicationListenerTestBase
-    {
+    public class GenericServiceBusCommunicationListener_HandlerFunc_Tests
 
+    {
         private IServiceBusMessageHandler _handler;
         private IReceiverClientFactory _factory;
         private GenericServiceBusCommunicationListener _sut;
         private IReceiverClient _receiverClient;
 
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -31,8 +31,8 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
                 .Returns(_receiverClient);
             _sut = new GenericServiceBusCommunicationListener(null, _factory, (s) => _handler);
         }
-     
-          [Test]
+
+        [Test]
         public async Task When_Listener_Is_Opened_Register_MessageHandler()
         {
             await _sut.OpenAsync(CancellationToken.None);
@@ -123,13 +123,13 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
 
             await _sut.OpenAsync(CancellationToken.None);
             await _sut.DeadLetter(message);
-            
+
             A.CallTo(() =>
                     _receiverClient.DeadLetterAsync(message.SystemProperties.LockToken,
                         A<IDictionary<string, object>>._))
                 .MustHaveHappenedOnceExactly();
         }
-        
+
         [Test]
         public async Task When_Abandon_Message_Delegate_LockToken_To_ReceiverClient_AbandonAsync()
         {
@@ -138,13 +138,13 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
 
             await _sut.OpenAsync(CancellationToken.None);
             await _sut.Abandon(message);
-            
+
             A.CallTo(() =>
                     _receiverClient.AbandonAsync(message.SystemProperties.LockToken,
                         A<IDictionary<string, object>>._))
                 .MustHaveHappenedOnceExactly();
         }
-        
+
         [Test]
         public async Task When_Complete_Message_Delegate_LockToken_To_ReceiverClient_ComplateAsync()
         {
@@ -153,7 +153,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
 
             await _sut.OpenAsync(CancellationToken.None);
             await _sut.Complete(message);
-            
+
             A.CallTo(() => _receiverClient.CompleteAsync(message.SystemProperties.LockToken))
                 .MustHaveHappenedOnceExactly();
         }

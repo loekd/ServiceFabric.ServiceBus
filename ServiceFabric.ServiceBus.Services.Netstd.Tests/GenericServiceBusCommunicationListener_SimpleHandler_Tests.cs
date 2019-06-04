@@ -11,7 +11,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
 {
     [TestFixture]
     public class
-        GenericServiceBusCommunicationListener_SimpleHandler_Tests : GenericServiceBusCommunicationListenerTestBase
+        GenericServiceBusCommunicationListener_SimpleHandler_Tests
     {
         private IServiceBusMessageHandler _handler;
         private IReceiverClientFactory _factory;
