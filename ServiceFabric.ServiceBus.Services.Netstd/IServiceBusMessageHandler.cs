@@ -7,7 +7,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
 	/// <summary>
 	/// Marks a class as capable of receiving <see cref="Message"/>s, with added cancellation support.
 	/// </summary>
-	public interface IServiceBusMessageReceiver
+	public interface IServiceBusMessageHandler
 	{
         /// <summary>
         /// Indicates whether a batch of messages should be automatically completed after processing.
@@ -19,6 +19,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// </summary>
         /// <param name="message">The incoming Service Bus Message to process</param>
         /// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
-        Task ReceiveMessageAsync(Message message, CancellationToken cancellationToken);
+        Task HandleAsync(Message message, CancellationToken cancellationToken);
     }
 }

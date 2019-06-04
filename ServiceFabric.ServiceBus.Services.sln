@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceFabric.ServiceBus.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceFabric.ServiceBus.Services.Netstd", "ServiceFabric.ServiceBus.Services.Netstd\ServiceFabric.ServiceBus.Services.Netstd.csproj", "{3BC35E4C-2346-40F8-9E48-58A55D99326E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceFabric.ServiceBus.Services.Netstd.Tests", "ServiceFabric.ServiceBus.Services.Netstd.Tests\ServiceFabric.ServiceBus.Services.Netstd.Tests.csproj", "{916A415F-4065-427C-9EF0-B34DE2C1F70A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -29,6 +31,10 @@ Global
 		{3BC35E4C-2346-40F8-9E48-58A55D99326E}.Debug|x64.Build.0 = Debug|x64
 		{3BC35E4C-2346-40F8-9E48-58A55D99326E}.Release|x64.ActiveCfg = Release|x64
 		{3BC35E4C-2346-40F8-9E48-58A55D99326E}.Release|x64.Build.0 = Release|x64
+		{916A415F-4065-427C-9EF0-B34DE2C1F70A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{916A415F-4065-427C-9EF0-B34DE2C1F70A}.Debug|x64.Build.0 = Debug|Any CPU
+		{916A415F-4065-427C-9EF0-B34DE2C1F70A}.Release|x64.ActiveCfg = Release|Any CPU
+		{916A415F-4065-427C-9EF0-B34DE2C1F70A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
