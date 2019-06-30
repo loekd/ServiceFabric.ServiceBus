@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Core;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
 
 namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 {
@@ -115,7 +114,8 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 
             Thread.Yield();
 
-            var uri = ReceiverClient.ServiceBusConnection?.Endpoint?.ToString();
+            //create send url: ??
+            var uri = "endpoint://";
             return Task.FromResult(uri);
         }
 

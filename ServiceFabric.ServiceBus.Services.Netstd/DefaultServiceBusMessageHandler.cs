@@ -62,7 +62,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         {
             try
             {
-                await HandleMessageImplAsync(message, cancellationToken).ConfigureAwait(false);
+                await ReceiveMessageImplAsync(message, cancellationToken).ConfigureAwait(false);
                 if (AutoComplete)
                 {
                     await CompleteMessage(message).ConfigureAwait(false);
@@ -70,7 +70,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
             }
             catch (Exception ex)
             {
-                if (!await HandleMessageError(message, ex).ConfigureAwait(false))
+                if (!await HandleReceiveMessageError(message, ex).ConfigureAwait(false))
                     throw;
             }
         }
@@ -82,20 +82,20 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// </summary>
         /// <param name="message"></param>
         /// <param name="ex"></param>
-        protected virtual async Task<bool> HandleMessageError(Message message, Exception ex)
+        protected virtual async Task<bool> HandleReceiveMessageError(Message message, Exception ex)
         {
             WriteLog($"Abandoning message {message.MessageId}. Error:'{ex}'.");
             await Listener.Abandon(message).ConfigureAwait(false);
             //assuming overriding code handles exceptions.
             return true;
         }
-        
+
         /// <summary>
         /// Removes the lock on the provided message to put it back on the queue for later consumption.
         /// </summary>
         /// <param name="message"></param>
         /// <param name="propertiesToModify"></param>
-        protected Task AbandonMessage(Message message, IDictionary<string, object> propertiesToModify = null)
+        protected Task AbandonMessage(Message message, IDictionary<string, object> propertiesToModify)
         {
             WriteLog($"Moving message {message.MessageId} to dead letter queue.");
             return Listener.Abandon(message, propertiesToModify);
@@ -106,7 +106,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// </summary>
         /// <param name="message"></param>
         /// <param name="propertiesToModify"></param>
-        protected Task DeadLetterMessage(Message message, IDictionary<string, object> propertiesToModify = null)
+        protected Task DeadLetterMessage(Message message, IDictionary<string, object> propertiesToModify)
         {
             WriteLog($"Moving message {message.MessageId} to dead letter queue.");
             return Listener.DeadLetter(message, propertiesToModify);
@@ -127,7 +127,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// </summary>
         /// <param name="message">The incoming Service Bus Message to process</param>
         /// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
-        protected abstract Task HandleMessageImplAsync(Message message, CancellationToken cancellationToken);
+        protected abstract Task ReceiveMessageImplAsync(Message message, CancellationToken cancellationToken);
 
         /// <summary>
         /// Writes a log entry if <see cref="LogAction"/> is not null.

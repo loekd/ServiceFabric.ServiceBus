@@ -224,8 +224,8 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             _stopProcessingMessageTokenSource.Cancel();
             _stopProcessingMessageTokenSource.Dispose();
 
-            ProcessingMessage?.Release(MaxConcurrentCalls ?? 1);
-            ProcessingMessage?.Dispose();
+            ProcessingMessage.Release(MaxConcurrentCalls ?? 1);
+            ProcessingMessage.Dispose();
         }
 
         /// <inheritdoc />
