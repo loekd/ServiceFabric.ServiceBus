@@ -39,6 +39,9 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
+v7.0.3 (Netstd only)
+ - Abandon received messages while closing.
+
 v7.0.2 (Netstd only)
  - add `CompleteMessage` to `DefaultServiceBusMessageReceiver` to allow easy message completion.
 

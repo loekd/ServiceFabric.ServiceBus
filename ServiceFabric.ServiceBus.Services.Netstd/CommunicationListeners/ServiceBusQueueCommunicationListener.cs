@@ -107,9 +107,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             {
                 if (IsClosing)
                 {
-                    // We want the thread to sleep and not return immediately.
-                    // Returning immediately could increment the message fail count and send it to dead letter.
-                    Thread.Sleep(CloseTimeout);
+                    await Abandon(message);
                     return;
                 }
 
