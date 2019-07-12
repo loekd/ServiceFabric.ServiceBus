@@ -97,6 +97,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             {
                 options.MaxConcurrentCalls = MaxConcurrentCalls.Value;
             }
+            options.AutoComplete = _handler.AutoComplete;
 
             ReceiverClient.RegisterMessageHandler(ReceiveMessageAsync, options);
         }
