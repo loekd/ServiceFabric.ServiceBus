@@ -15,7 +15,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
     {
         private readonly IReceiverClientFactory _clientFactory;
 
-        private readonly IServiceBusMessageHandler _handler;
+        private readonly IServiceBusMessageReceiver _receiver;
 
         /// <summary>
         /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
@@ -23,15 +23,15 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// </summary>
         /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
         /// <param name="clientFactory">A factory to create either QueueClient or SubscriptionClient to listen for messages</param>
-        /// <param name="handler">A handler for incoming messages</param>
+        /// <param name="receiver">A handler for incoming messages</param>
         public GenericServiceBusCommunicationListener(
             ServiceContext context,
             IReceiverClientFactory clientFactory,
-            IServiceBusMessageHandler handler) :
+            IServiceBusMessageReceiver receiver) :
             base(context)
         {
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
-            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             base(context)
         {
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
-            _handler = receiverFactory?.Create(this) ?? throw new ArgumentNullException(nameof(receiverFactory));
+            _receiver = receiverFactory?.Create(this) ?? throw new ArgumentNullException(nameof(receiverFactory));
         }
         /// <summary>
         /// Uses ext
@@ -59,12 +59,12 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         public GenericServiceBusCommunicationListener(
             ServiceContext context,
             IReceiverClientFactory clientFactory,
-            Func<IServiceBusCommunicationListener, IServiceBusMessageHandler> receiverFactory
+            Func<IServiceBusCommunicationListener, IServiceBusMessageReceiver> receiverFactory
         ) :
             base(context)
         {
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
-            _handler = receiverFactory?.Invoke(this) ?? throw new ArgumentNullException(nameof(receiverFactory));
+            _receiver = receiverFactory?.Invoke(this) ?? throw new ArgumentNullException(nameof(receiverFactory));
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
             {
                 options.MaxConcurrentCalls = MaxConcurrentCalls.Value;
             }
-            options.AutoComplete = _handler.AutoComplete;
+            options.AutoComplete = _receiver.AutoComplete;
 
             ReceiverClient.RegisterMessageHandler(ReceiveMessageAsync, options);
         }
@@ -144,7 +144,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
                 ProcessingMessage.Wait(cancellationToken);
                 var combined = CancellationTokenSource
                     .CreateLinkedTokenSource(cancellationToken, StopProcessingMessageToken).Token;
-                await _handler.HandleAsync(message, combined);
+                await _receiver.ReceiveMessageAsync(message, combined);
             }
             finally
             {

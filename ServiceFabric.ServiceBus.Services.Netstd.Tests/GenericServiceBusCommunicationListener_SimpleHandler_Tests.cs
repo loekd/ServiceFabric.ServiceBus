@@ -13,7 +13,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
     public class
         GenericServiceBusCommunicationListener_SimpleHandler_Tests
     {
-        private IServiceBusMessageHandler _handler;
+        private IServiceBusMessageReceiver _receiver;
         private IReceiverClientFactory _factory;
         private GenericServiceBusCommunicationListener _sut;
         private IReceiverClient _receiverClient;
@@ -22,12 +22,12 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
         [SetUp]
         public void SetUp()
         {
-            _handler = A.Fake<IServiceBusMessageHandler>();
+            _receiver = A.Fake<IServiceBusMessageReceiver>();
             _factory = A.Fake<IReceiverClientFactory>();
             _receiverClient = A.Fake<IReceiverClient>();
             A.CallTo(() => _factory.Create())
                 .Returns(_receiverClient);
-            _sut = new GenericServiceBusCommunicationListener(null, _factory, _handler);
+            _sut = new GenericServiceBusCommunicationListener(null, _factory, _receiver);
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
             await handler(message, CancellationToken.None);
 
             // Assert that added message handler gets triggered on message
-            A.CallTo(() => _handler.HandleAsync(A<Message>.That.IsSameAs(message), A<CancellationToken>._))
+            A.CallTo(() => _receiver.ReceiveMessageAsync(A<Message>.That.IsSameAs(message), A<CancellationToken>._))
                 .MustHaveHappenedOnceExactly();
         }
 

@@ -11,7 +11,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
         public void When_All_Parameters_Are_null_Throw_ArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() => new GenericServiceBusCommunicationListener(null, null, (IServiceBusMessageHandlerFactory) null));
-            Assert.Throws<ArgumentNullException>(() => new GenericServiceBusCommunicationListener(null, null, (IServiceBusMessageHandler) null));
+            Assert.Throws<ArgumentNullException>(() => new GenericServiceBusCommunicationListener(null, null, (IServiceBusMessageReceiver) null));
         }
         
         [Test]
@@ -23,14 +23,14 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
         [Test]
         public void When_ServiceBusMessageHandler_Is_null_Throw_ArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new GenericServiceBusCommunicationListener(null, null, A.Fake<IServiceBusMessageHandler>()));
+            Assert.Throws<ArgumentNullException>(() => new GenericServiceBusCommunicationListener(null, null, A.Fake<IServiceBusMessageReceiver>()));
         }
         
         
         [Test]
         public void When_ServiceBusMessageHandlerFunc_Is_null_Throw_ArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new GenericServiceBusCommunicationListener(null, null, (s) => A.Fake<IServiceBusMessageHandler>()));
+            Assert.Throws<ArgumentNullException>(() => new GenericServiceBusCommunicationListener(null, null, (s) => A.Fake<IServiceBusMessageReceiver>()));
         }
         
         [Test]
@@ -51,7 +51,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.Tests
         [Test]
         public void When_Only_Context_Is_Null_Throws_Nothing()
         {
-            var handler = A.Fake<IServiceBusMessageHandler>();
+            var handler = A.Fake<IServiceBusMessageReceiver>();
             var factory = A.Fake<IServiceBusMessageHandlerFactory>();
             var clientFactory = A.Fake<IReceiverClientFactory>();
             Assert.DoesNotThrow(() => new GenericServiceBusCommunicationListener(null, clientFactory, handler));

@@ -21,12 +21,12 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// <summary>
         /// Processor for messages.
         /// </summary>
-        protected IServiceBusMessageHandler Handler { get; }
+        protected IServiceBusMessageReceiver Receiver { get; }
 
         /// <summary>
         /// Creates a new instance, using the init parameters of a <see cref="StatefulService"/>
         /// </summary>
-        /// <param name="handler">(Required) Processes incoming messages.</param>
+        /// <param name="receiver">(Required) Processes incoming messages.</param>
         /// <param name="context">(Optional) The context that was used to init the Reliable Service that uses this listener.</param>
         /// <param name="serviceBusQueueName">(Optional) The name of the monitored Service Bus Queue (EntityPath in connectionstring is supported too)</param>
         /// <param name="serviceBusSendConnectionString">(Optional) A Service Bus connection string that can be used for Sending messages. 
@@ -34,14 +34,14 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// </param>
         /// <param name="serviceBusReceiveConnectionString">(Required) A Service Bus connection string that can be used for Receiving messages. 
         /// </param>
-        public ServiceBusQueueCommunicationListener(IServiceBusMessageHandler handler, 
+        public ServiceBusQueueCommunicationListener(IServiceBusMessageReceiver receiver, 
             ServiceContext context, 
             string serviceBusQueueName, 
             string serviceBusSendConnectionString, 
             string serviceBusReceiveConnectionString)
             : base(context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString)
         {
-            Handler = handler ?? throw new ArgumentNullException(nameof(handler));
+            Receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// </param>
         /// <param name="serviceBusReceiveConnectionString">(Required) A Service Bus connection string that can be used for Receiving messages. 
         /// </param>
-        public ServiceBusQueueCommunicationListener(Func<IServiceBusCommunicationListener, IServiceBusMessageHandler> receiverFactory,
+        public ServiceBusQueueCommunicationListener(Func<IServiceBusCommunicationListener, IServiceBusMessageReceiver> receiverFactory,
             ServiceContext context,
             string serviceBusQueueName,
             string serviceBusSendConnectionString,
@@ -64,7 +64,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         {
             if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
             var serviceBusMessageReceiver = receiverFactory(this);
-            Handler = serviceBusMessageReceiver ?? throw new ArgumentException("Receiver factory cannot return null.", nameof(receiverFactory));
+            Receiver = serviceBusMessageReceiver ?? throw new ArgumentException("Receiver factory cannot return null.", nameof(receiverFactory));
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         }
 
         /// <summary>
-        /// Will pass an incoming message to the <see cref="Handler"/> for processing.
+        /// Will pass an incoming message to the <see cref="Receiver"/> for processing.
         /// </summary>
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
@@ -115,7 +115,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
 
                 ProcessingMessage.Wait(cancellationToken);
                 var combined = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, StopProcessingMessageToken).Token;
-                await Handler.HandleAsync(message, combined);
+                await Receiver.ReceiveMessageAsync(message, combined);
             }
             finally
             {

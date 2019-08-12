@@ -9,14 +9,14 @@ using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
 namespace ServiceFabric.ServiceBus.Services.Netstd
 {
     /// <summary>
-    /// Implementation of <see cref="IServiceBusMessageHandler"/> that can automatically call <see cref="IServiceBusCommunicationListener.Complete"/>
+    /// Implementation of <see cref="IServiceBusMessageReceiver"/> that can automatically call <see cref="IServiceBusCommunicationListener.Complete"/>
     /// on the received message after successful processing.
     /// Upon failure, it will call <see cref="IServiceBusCommunicationListener.Abandon"/> and suppress the error.
     /// Also has dead-letter and cancellation support.
     /// </summary>
     /// <remarks>Use the communication listener constructor that takes 
     /// Func&lt;IServiceBusCommunicationListener, IServiceBusMessageReceiver&gt; receiverFactory</remarks>
-    public abstract class DefaultServiceBusMessageHandler : IServiceBusMessageHandler
+    public abstract class DefaultServiceBusMessageReceiver : IServiceBusMessageReceiver
     {
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// </summary>
         /// <param name="receiver"></param>
         /// <param name="logAction"></param>
-        protected DefaultServiceBusMessageHandler(IServiceBusCommunicationListener receiver, Action<string> logAction)
+        protected DefaultServiceBusMessageReceiver(IServiceBusCommunicationListener receiver, Action<string> logAction)
         {
             Listener = receiver ?? throw new ArgumentNullException(nameof(receiver));
             LogAction = logAction;
@@ -47,7 +47,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// Creates a new instance using the provided log callback.
         /// </summary>
         /// <param name="receiver"></param>
-        protected DefaultServiceBusMessageHandler(IServiceBusCommunicationListener receiver)
+        protected DefaultServiceBusMessageReceiver(IServiceBusCommunicationListener receiver)
         {
             Listener = receiver ?? throw new ArgumentNullException(nameof(receiver));
         }
@@ -58,7 +58,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         /// </summary>
         /// <param name="message">The incoming Service Bus Message to process</param>
         /// <param name="cancellationToken">When Set, indicates that processing should stop.</param>
-        public async Task HandleAsync(Message message, CancellationToken cancellationToken)
+        public async Task ReceiveMessageAsync(Message message, CancellationToken cancellationToken)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
         }
 
         /// <summary>
-        /// Called when an error is thrown from <see cref="HandleAsync"/>.
+        /// Called when an error is thrown from <see cref="ReceiveMessageAsync"/>.
         /// Logs the error using <see cref="LogAction"/> and calls <see cref="AbandonMessage"/>. 
         /// When overridden: Return true if the error is handled. Return false to terminate the process.
         /// </summary>

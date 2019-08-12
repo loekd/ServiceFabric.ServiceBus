@@ -4,6 +4,6 @@ namespace ServiceFabric.ServiceBus.Services.Netstd
 {
     public interface IServiceBusMessageHandlerFactory
     {
-        IServiceBusMessageHandler Create(IServiceBusCommunicationListener listener);
+        IServiceBusMessageReceiver Create(IServiceBusCommunicationListener listener);
     }
 }
