@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <Description>Receive BrokeredMessages in ServiceFabric Services through Service Bus. Add this package to your Reliable Service projects. The ServiceFabric.ServiceBus.Services Class Library can be used in conjunction with ServiceFabric.ServiceBus.Clients (optional)</Description>
-    <Copyright>2019</Copyright>
-    <VersionPrefix>7.0.3</VersionPrefix>
+    <Copyright>2021</Copyright>
+    <VersionPrefix>7.0.4</VersionPrefix>
     <Authors>Loek Duys</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
@@ -43,8 +43,8 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.1.0" />
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.2.176" />
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="5.1.2" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="5.0.514" />
   </ItemGroup>
 
 </Project>

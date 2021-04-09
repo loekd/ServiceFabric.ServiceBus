@@ -72,7 +72,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// </summary>
         protected override void ListenForMessages()
         {
-            var options = new MessageHandlerOptions(ExceptionReceivedHandler);
+            var options = new MessageHandlerOptions(ExceptionReceivedHandler) { AutoComplete = false };
             if (AutoRenewTimeout.HasValue)
             {
                 options.MaxAutoRenewDuration = AutoRenewTimeout.Value;

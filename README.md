@@ -39,6 +39,9 @@ Please also make sure all feature additions have a corresponding unit test.
 
 ## Release notes:
 
+v7.0.4 (Netstd only)
+ - Opt out of autocomplete by default.
+
 v7.0.3 (Netstd only)
  - Abandon received messages while closing.
 
