@@ -96,7 +96,7 @@ namespace ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners
         /// <returns></returns>
         protected virtual Task ExceptionReceivedHandler(ExceptionReceivedEventArgs args)
         {
-            LogAction($"There was an error while receiving a message: {args.Exception.Message}");
+            WriteLog($"There was an error while receiving a message: {args.Exception.Message}");
             return Task.CompletedTask;
         }
 

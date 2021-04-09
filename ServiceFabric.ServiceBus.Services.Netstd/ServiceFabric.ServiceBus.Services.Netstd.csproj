@@ -26,6 +26,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <Platforms>x64</Platforms>
     <SignAssembly>true</SignAssembly>
+    <PackageVersion>8.0.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
